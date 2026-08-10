@@ -29,9 +29,8 @@ class TripsScreen extends ConsumerWidget {
               final trip = trips[index];
               return ListTile(
                 title: Text(trip.name),
-                subtitle: trip.description != null
-                    ? Text(trip.description!)
-                    : null,
+                subtitle:
+                    trip.description != null ? Text(trip.description!) : null,
                 trailing: Text(trip.currency),
                 onTap: () => context.go('/trip/${trip.id}'),
                 onLongPress: () => _showDeleteDialog(context, ref, trip, l10n),

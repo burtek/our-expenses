@@ -21,10 +21,7 @@ class OverviewTab extends ConsumerWidget {
           0,
           (sum, e) => sum + e.totalAmount,
         );
-        final trip = ref
-            .watch(tripsProvider)
-            .valueOrNull
-            ?.firstWhere(
+        final trip = ref.watch(tripsProvider).valueOrNull?.firstWhere(
               (t) => t.id == tripId,
               orElse: () => Trip(
                 id: tripId,

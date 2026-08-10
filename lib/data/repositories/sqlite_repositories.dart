@@ -53,12 +53,13 @@ class SqliteTripRepository implements TripRepository {
   }
 
   Trip _mapToTrip(Map<String, dynamic> map) => Trip(
-    id: map['id'] as String,
-    name: map['name'] as String,
-    description: map['description'] as String?,
-    currency: map['currency'] as String,
-    createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
-  );
+        id: map['id'] as String,
+        name: map['name'] as String,
+        description: map['description'] as String?,
+        currency: map['currency'] as String,
+        createdAt:
+            DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      );
 }
 
 class SqlitePersonRepository implements PersonRepository {

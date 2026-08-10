@@ -55,8 +55,8 @@ class TripsNotifier extends AsyncNotifier<List<Trip>> {
 // Persons provider (per trip)
 final personsProvider =
     AsyncNotifierProvider.family<PersonsNotifier, List<Person>, String>(
-      PersonsNotifier.new,
-    );
+  PersonsNotifier.new,
+);
 
 class PersonsNotifier extends FamilyAsyncNotifier<List<Person>, String> {
   @override
@@ -81,12 +81,10 @@ class PersonsNotifier extends FamilyAsyncNotifier<List<Person>, String> {
 }
 
 // Settlement groups provider (per trip)
-final settlementGroupsProvider =
-    AsyncNotifierProvider.family<
-      SettlementGroupsNotifier,
-      List<SettlementGroup>,
-      String
-    >(SettlementGroupsNotifier.new);
+final settlementGroupsProvider = AsyncNotifierProvider.family<
+    SettlementGroupsNotifier,
+    List<SettlementGroup>,
+    String>(SettlementGroupsNotifier.new);
 
 class SettlementGroupsNotifier
     extends FamilyAsyncNotifier<List<SettlementGroup>, String> {
@@ -114,8 +112,8 @@ class SettlementGroupsNotifier
 // Expenses provider (per trip)
 final expensesProvider =
     AsyncNotifierProvider.family<ExpensesNotifier, List<Expense>, String>(
-      ExpensesNotifier.new,
-    );
+  ExpensesNotifier.new,
+);
 
 class ExpensesNotifier extends FamilyAsyncNotifier<List<Expense>, String> {
   @override
@@ -142,19 +140,19 @@ class ExpensesNotifier extends FamilyAsyncNotifier<List<Expense>, String> {
 // Settlement result provider (per trip)
 final settlementResultProvider =
     FutureProvider.family<SettlementResult, String>((ref, tripId) async {
-      final expenses = await ref.watch(expensesProvider(tripId).future);
-      final participants = await ref.watch(personsProvider(tripId).future);
-      final groups = await ref.watch(settlementGroupsProvider(tripId).future);
+  final expenses = await ref.watch(expensesProvider(tripId).future);
+  final participants = await ref.watch(personsProvider(tripId).future);
+  final groups = await ref.watch(settlementGroupsProvider(tripId).future);
 
-      // Get trip currency
-      final trip = await ref.read(tripRepositoryProvider).getTripById(tripId);
-      final currency = trip?.currency ?? 'EUR';
+  // Get trip currency
+  final trip = await ref.read(tripRepositoryProvider).getTripById(tripId);
+  final currency = trip?.currency ?? 'EUR';
 
-      final calculator = ref.read(settlementCalculatorProvider);
-      return calculator.calculate(
-        expenses: expenses,
-        participants: participants,
-        groups: groups,
-        currency: currency,
-      );
-    });
+  final calculator = ref.read(settlementCalculatorProvider);
+  return calculator.calculate(
+    expenses: expenses,
+    participants: participants,
+    groups: groups,
+    currency: currency,
+  );
+});

@@ -10,10 +10,10 @@ class Person {
   });
 
   Person copyWith({String? displayName}) => Person(
-    id: id,
-    displayName: displayName ?? this.displayName,
-    tripId: tripId,
-  );
+        id: id,
+        displayName: displayName ?? this.displayName,
+        tripId: tripId,
+      );
 
   @override
   bool operator ==(Object other) => other is Person && other.id == id;

@@ -46,9 +46,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (isEdit && !_loaded) {
       final expensesAsync = ref.watch(expensesProvider(widget.tripId));
       expensesAsync.whenData((expenses) {
-        final expense = expenses
-            .where((e) => e.id == widget.expenseId)
-            .firstOrNull;
+        final expense =
+            expenses.where((e) => e.id == widget.expenseId).firstOrNull;
         if (expense != null && !_loaded) {
           _loaded = true;
           _descController.text = expense.description;
@@ -56,9 +55,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           _splitMode = expense.splitMode;
           _date = expense.dateTime;
           _selectedPayers = expense.payers.map((p) => p.personId).toSet();
-          _selectedBeneficiaries = expense.beneficiaries
-              .map((b) => b.personId)
-              .toSet();
+          _selectedBeneficiaries =
+              expense.beneficiaries.map((b) => b.personId).toSet();
           for (final p in expense.payers) {
             _payerAmounts[p.personId] = p.amount;
           }
@@ -227,9 +225,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         );
         break;
       case SplitMode.byShares:
-        final shares = benList
-            .map((id) => _beneficiaryShares[id] ?? 1)
-            .toList();
+        final shares =
+            benList.map((id) => _beneficiaryShares[id] ?? 1).toList();
         final splits = SettlementCalculator.splitByShares(totalAmount, shares);
         beneficiaries = List.generate(
           benList.length,

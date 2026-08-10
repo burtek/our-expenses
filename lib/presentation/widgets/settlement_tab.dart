@@ -48,12 +48,10 @@ class SettlementTab extends ConsumerWidget {
             if (result.transactions.isEmpty)
               Center(child: Text(l10n.noTransactions)),
             ...result.transactions.map((tx) {
-              final fromNames = tx.fromIds
-                  .map((id) => nameMap[id] ?? id)
-                  .join(' & ');
-              final toNames = tx.toIds
-                  .map((id) => nameMap[id] ?? id)
-                  .join(' & ');
+              final fromNames =
+                  tx.fromIds.map((id) => nameMap[id] ?? id).join(' & ');
+              final toNames =
+                  tx.toIds.map((id) => nameMap[id] ?? id).join(' & ');
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
