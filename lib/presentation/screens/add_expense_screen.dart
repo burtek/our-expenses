@@ -41,6 +41,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final participantsAsync = ref.watch(personsProvider(widget.tripId));
     final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.expenseId != null;
+    final canPop = context.canPop();
 
     // Load existing expense if editing
     if (isEdit && !_loaded) {
@@ -70,26 +71,35 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(isEdit ? l10n.editExpense : l10n.addExpense),
-        actions: [
-          if (isEdit)
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                ref
-                    .read(expensesProvider(widget.tripId).notifier)
-                    .deleteExpense(widget.expenseId!);
-                _closeScreen();
-              },
-            ),
-        ],
-      ),
-      body: participantsAsync.when(
-        data: (participants) => _buildForm(context, participants, l10n),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          _closeScreen();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: _closeScreen),
+          title: Text(isEdit ? l10n.editExpense : l10n.addExpense),
+          actions: [
+            if (isEdit)
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  ref
+                      .read(expensesProvider(widget.tripId).notifier)
+                      .deleteExpense(widget.expenseId!);
+                  _closeScreen();
+                },
+              ),
+          ],
+        ),
+        body: participantsAsync.when(
+          data: (participants) => _buildForm(context, participants, l10n),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }
