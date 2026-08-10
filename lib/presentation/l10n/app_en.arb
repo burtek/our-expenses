@@ -42,5 +42,18 @@
   "total": "Total",
   "shares": "Shares",
   "owes": "owes",
-  "isOwed": "is owed"
+  "isOwed": "is owed",
+  "expenseDescriptionRequired": "Expense description is required.",
+  "invalidAmount": "Enter a valid amount greater than zero.",
+  "selectAtLeastOnePayer": "Select at least one payer.",
+  "selectAtLeastOneBeneficiary": "Select at least one beneficiary.",
+  "payerAmountsMustMatchTotal": "Payer amounts must add up to the total.",
+  "beneficiaryAmountsMustMatchTotal": "Beneficiary amounts must add up to the total.",
+  "sharesMustBePositive": "Shares must be positive numbers.",
+  "renameParticipant": "Rename Participant",
+  "markAsSettled": "Mark as settled",
+  "settleUpTransfer": "Settle up transfer",
+  "noSettlementGroups": "No settlement groups yet.",
+  "selectAtLeastOneMember": "Select at least one group member.",
+  "participantAlreadyGrouped": "This participant is already in another group."
 }
