@@ -8,10 +8,7 @@ import 'presentation/screens/add_expense_screen.dart';
 
 final _router = GoRouter(
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const TripsScreen(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const TripsScreen()),
     GoRoute(
       path: '/trip/:tripId',
       builder: (context, state) =>
@@ -55,10 +52,7 @@ class ExpenseSettlerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('pl'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('pl')],
       routerConfig: _router,
     );
   }

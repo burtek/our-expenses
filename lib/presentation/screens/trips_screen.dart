@@ -50,7 +50,10 @@ class TripsScreen extends ConsumerWidget {
   }
 
   void _showAddTripDialog(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     final nameController = TextEditingController();
     final descController = TextEditingController();
     String currency = 'EUR';
@@ -111,7 +114,11 @@ class TripsScreen extends ConsumerWidget {
   }
 
   void _showDeleteDialog(
-      BuildContext context, WidgetRef ref, Trip trip, AppLocalizations l10n) {
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    AppLocalizations l10n,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

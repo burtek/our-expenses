@@ -36,9 +36,10 @@ class ExpensesTab extends ConsumerWidget {
               title: Text(expense.description),
               subtitle: Text('${l10n.payers}: $payerNames'),
               trailing: Text(
-                  '$major.${minor.toString().padLeft(2, '0')} ${expense.currency}'),
-              onTap: () => context
-                  .go('/trip/$tripId/edit-expense/${expense.id}'),
+                '$major.${minor.toString().padLeft(2, '0')} ${expense.currency}',
+              ),
+              onTap: () =>
+                  context.go('/trip/$tripId/edit-expense/${expense.id}'),
             );
           },
         );

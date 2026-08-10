@@ -54,7 +54,10 @@ class ParticipantsTab extends ConsumerWidget {
   }
 
   void _addParticipant(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) {
     final controller = TextEditingController();
     showDialog(
       context: context,

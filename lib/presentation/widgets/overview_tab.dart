@@ -17,15 +17,21 @@ class OverviewTab extends ConsumerWidget {
     return expensesAsync.when(
       data: (expenses) {
         final participants = participantsAsync.valueOrNull ?? [];
-        final totalSpent =
-            expenses.fold<int>(0, (sum, e) => sum + e.totalAmount);
-        final trip = ref.watch(tripsProvider).valueOrNull?.firstWhere(
+        final totalSpent = expenses.fold<int>(
+          0,
+          (sum, e) => sum + e.totalAmount,
+        );
+        final trip = ref
+            .watch(tripsProvider)
+            .valueOrNull
+            ?.firstWhere(
               (t) => t.id == tripId,
               orElse: () => Trip(
-                  id: tripId,
-                  name: '',
-                  currency: 'EUR',
-                  createdAt: DateTime.now()),
+                id: tripId,
+                name: '',
+                currency: 'EUR',
+                createdAt: DateTime.now(),
+              ),
             );
         final currency = trip?.currency ?? 'EUR';
 
@@ -38,13 +44,13 @@ class OverviewTab extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${l10n.total}: ${_formatMoney(totalSpent, currency)}',
-                        style: Theme.of(context).textTheme.headlineSmall),
+                    Text(
+                      '${l10n.total}: ${_formatMoney(totalSpent, currency)}',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                     const SizedBox(height: 8),
-                    Text(
-                        '${l10n.expenses}: ${expenses.length}'),
-                    Text(
-                        '${l10n.participants}: ${participants.length}'),
+                    Text('${l10n.expenses}: ${expenses.length}'),
+                    Text('${l10n.participants}: ${participants.length}'),
                   ],
                 ),
               ),

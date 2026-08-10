@@ -152,9 +152,7 @@ void main() {
             const ExpensePayer(personId: 'A', amount: 300),
             const ExpensePayer(personId: 'B', amount: 300),
           ],
-          beneficiaries: [
-            const ExpenseBeneficiary(personId: 'C', amount: 600),
-          ],
+          beneficiaries: [const ExpenseBeneficiary(personId: 'C', amount: 600)],
         ),
       ];
 
@@ -237,7 +235,10 @@ void main() {
       );
 
       // Sum of beneficiary amounts = total
-      expect(1000, expenses[0].beneficiaries.fold<int>(0, (s, b) => s + b.amount));
+      expect(
+        1000,
+        expenses[0].beneficiaries.fold<int>(0, (s, b) => s + b.amount),
+      );
       expect(result.individualBalances.values.reduce((a, b) => a + b), 0);
     });
 
@@ -354,9 +355,17 @@ void main() {
       final persons = [person('A'), person('B'), person('C'), person('D')];
       final groups = [
         const SettlementGroup(
-            id: 'g1', name: 'Couple1', tripId: 'trip1', memberIds: ['A', 'B']),
+          id: 'g1',
+          name: 'Couple1',
+          tripId: 'trip1',
+          memberIds: ['A', 'B'],
+        ),
         const SettlementGroup(
-            id: 'g2', name: 'Couple2', tripId: 'trip1', memberIds: ['C', 'D']),
+          id: 'g2',
+          name: 'Couple2',
+          tripId: 'trip1',
+          memberIds: ['C', 'D'],
+        ),
       ];
       final expenses = [
         Expense(
@@ -399,7 +408,11 @@ void main() {
       final persons = [person('A'), person('B'), person('C')];
       final groups = [
         const SettlementGroup(
-            id: 'g1', name: 'Couple', tripId: 'trip1', memberIds: ['A', 'B']),
+          id: 'g1',
+          name: 'Couple',
+          tripId: 'trip1',
+          memberIds: ['A', 'B'],
+        ),
       ];
       final expenses = [
         Expense(
@@ -514,8 +527,10 @@ void main() {
 
       // Should have 2 transactions max (B->C for 200, A->C for 100)
       expect(result.transactions.length, 2);
-      final totalSettled =
-          result.transactions.fold<int>(0, (s, t) => s + t.amount);
+      final totalSettled = result.transactions.fold<int>(
+        0,
+        (s, t) => s + t.amount,
+      );
       expect(totalSettled, 300);
     });
 
@@ -531,9 +546,7 @@ void main() {
           currency: 'EUR',
           splitMode: SplitMode.equal,
           payers: [const ExpensePayer(personId: 'A', amount: 100)],
-          beneficiaries: [
-            const ExpenseBeneficiary(personId: 'B', amount: 100),
-          ],
+          beneficiaries: [const ExpenseBeneficiary(personId: 'B', amount: 100)],
         ),
         Expense(
           id: 'e2',
@@ -544,9 +557,7 @@ void main() {
           currency: 'EUR',
           splitMode: SplitMode.equal,
           payers: [const ExpensePayer(personId: 'B', amount: 100)],
-          beneficiaries: [
-            const ExpenseBeneficiary(personId: 'A', amount: 100),
-          ],
+          beneficiaries: [const ExpenseBeneficiary(personId: 'A', amount: 100)],
         ),
       ];
 
@@ -617,8 +628,7 @@ void main() {
       );
 
       final payerSum = expense.payers.fold<int>(0, (s, p) => s + p.amount);
-      final benSum =
-          expense.beneficiaries.fold<int>(0, (s, b) => s + b.amount);
+      final benSum = expense.beneficiaries.fold<int>(0, (s, b) => s + b.amount);
       expect(payerSum, expense.totalAmount);
       expect(benSum, expense.totalAmount);
     });

@@ -31,10 +31,7 @@ class SettlementCalculator {
     if (count == 0) return [];
     final base = total ~/ count;
     final remainder = total - base * count;
-    return List.generate(
-      count,
-      (i) => i < remainder ? base + 1 : base,
-    );
+    return List.generate(count, (i) => i < remainder ? base + 1 : base);
   }
 
   /// Split by shares. Distribute proportionally, remainder to first beneficiary.
@@ -77,8 +74,7 @@ class SettlementCalculator {
             (balances[payer.personId] ?? 0) + payer.amount;
       }
       for (final ben in expense.beneficiaries) {
-        balances[ben.personId] =
-            (balances[ben.personId] ?? 0) - ben.amount;
+        balances[ben.personId] = (balances[ben.personId] ?? 0) - ben.amount;
       }
     }
 
@@ -167,15 +163,18 @@ class SettlementCalculator {
 
       if (maxCreditor == null || maxDebtor == null) break;
 
-      final settleAmount =
-          maxCreditAmt < maxDebtAmt ? maxCreditAmt : maxDebtAmt;
+      final settleAmount = maxCreditAmt < maxDebtAmt
+          ? maxCreditAmt
+          : maxDebtAmt;
 
-      transactions.add(SettlementTransaction(
-        fromIds: groupMembers[maxDebtor] ?? [maxDebtor],
-        toIds: groupMembers[maxCreditor] ?? [maxCreditor],
-        amount: settleAmount,
-        currency: currency,
-      ));
+      transactions.add(
+        SettlementTransaction(
+          fromIds: groupMembers[maxDebtor] ?? [maxDebtor],
+          toIds: groupMembers[maxCreditor] ?? [maxCreditor],
+          amount: settleAmount,
+          currency: currency,
+        ),
+      );
 
       creditAmounts[maxCreditor] = maxCreditAmt - settleAmount;
       debtAmounts[maxDebtor] = maxDebtAmt - settleAmount;

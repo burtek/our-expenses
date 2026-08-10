@@ -20,8 +20,7 @@ class SettlementGroup {
       );
 
   @override
-  bool operator ==(Object other) =>
-      other is SettlementGroup && other.id == id;
+  bool operator ==(Object other) => other is SettlementGroup && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

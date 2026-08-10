@@ -22,8 +22,7 @@ class SettlementTab extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: [
             // Individual balances
-            Text(l10n.balances,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.balances, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             ...result.individualBalances.entries.map((entry) {
               final name = nameMap[entry.key] ?? entry.key;
@@ -41,16 +40,20 @@ class SettlementTab extends ConsumerWidget {
             }),
             const Divider(height: 32),
             // Transactions
-            Text(l10n.transactions,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.transactions,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             if (result.transactions.isEmpty)
               Center(child: Text(l10n.noTransactions)),
             ...result.transactions.map((tx) {
-              final fromNames =
-                  tx.fromIds.map((id) => nameMap[id] ?? id).join(' & ');
-              final toNames =
-                  tx.toIds.map((id) => nameMap[id] ?? id).join(' & ');
+              final fromNames = tx.fromIds
+                  .map((id) => nameMap[id] ?? id)
+                  .join(' & ');
+              final toNames = tx.toIds
+                  .map((id) => nameMap[id] ?? id)
+                  .join(' & ');
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
