@@ -1,5 +1,7 @@
 enum SplitMode { equal, byShares, exactAmounts }
 
+const settlementTransferDescriptionPrefix = '[SETTLE_UP] ';
+
 class ExpensePayer {
   final String personId;
   final int amount; // minor units
@@ -41,6 +43,13 @@ class Expense {
     required this.payers,
     required this.beneficiaries,
   });
+
+  bool get isSettlementTransfer =>
+      description.startsWith(settlementTransferDescriptionPrefix);
+
+  String get displayDescription => isSettlementTransfer
+      ? description.substring(settlementTransferDescriptionPrefix.length)
+      : description;
 
   @override
   bool operator ==(Object other) => other is Expense && other.id == id;
