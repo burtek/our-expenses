@@ -81,7 +81,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 ref
                     .read(expensesProvider(widget.tripId).notifier)
                     .deleteExpense(widget.expenseId!);
-                context.go('/trip/${widget.tripId}');
+                _closeScreen();
               },
             ),
         ],
@@ -265,6 +265,14 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       ref.read(expensesProvider(widget.tripId).notifier).updateExpense(expense);
     } else {
       ref.read(expensesProvider(widget.tripId).notifier).addExpense(expense);
+    }
+    _closeScreen();
+  }
+
+  void _closeScreen() {
+    if (context.canPop()) {
+      context.pop();
+      return;
     }
     context.go('/trip/${widget.tripId}');
   }

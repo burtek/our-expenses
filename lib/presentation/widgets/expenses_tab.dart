@@ -39,7 +39,7 @@ class ExpensesTab extends ConsumerWidget {
                 '$major.${minor.toString().padLeft(2, '0')} ${expense.currency}',
               ),
               onTap: () =>
-                  context.go('/trip/$tripId/edit-expense/${expense.id}'),
+                  context.push('/trip/$tripId/edit-expense/${expense.id}'),
             );
           },
         );

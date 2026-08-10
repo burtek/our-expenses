@@ -32,7 +32,7 @@ class TripsScreen extends ConsumerWidget {
                 subtitle:
                     trip.description != null ? Text(trip.description!) : null,
                 trailing: Text(trip.currency),
-                onTap: () => context.go('/trip/${trip.id}'),
+                onTap: () => context.push('/trip/${trip.id}'),
                 onLongPress: () => _showDeleteDialog(context, ref, trip, l10n),
               );
             },

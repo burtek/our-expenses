@@ -44,7 +44,7 @@ class TripDetailScreen extends ConsumerWidget {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => context.go('/trip/$tripId/add-expense'),
+          onPressed: () => context.push('/trip/$tripId/add-expense'),
           child: const Icon(Icons.add),
         ),
       ),
