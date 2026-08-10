@@ -20,7 +20,10 @@ class ParticipantsTab extends ConsumerWidget {
         data: (groups) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(l10n.participants, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.participants,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             if (persons.isEmpty)
               Padding(
@@ -153,10 +156,12 @@ class ParticipantsTab extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(person == null ? l10n.addParticipant : l10n.renameParticipant),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(labelText: l10n.participantName),
+      title: Text(
+        person == null ? l10n.addParticipant : l10n.renameParticipant,
+      ),
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(labelText: l10n.participantName),
           autofocus: true,
         ),
         actions: [
@@ -173,11 +178,15 @@ class ParticipantsTab extends ConsumerWidget {
                   displayName: controller.text.trim(),
                   tripId: tripId,
                 );
-                ref.read(personsProvider(tripId).notifier).addPerson(newPerson);
+                ref
+                    .read(personsProvider(tripId).notifier)
+                    .addPerson(newPerson);
               } else {
                 ref
                     .read(personsProvider(tripId).notifier)
-                    .updatePerson(person.copyWith(displayName: controller.text.trim()));
+                    .updatePerson(
+                      person.copyWith(displayName: controller.text.trim()),
+                    );
               }
               Navigator.pop(ctx);
             },
@@ -271,7 +280,8 @@ class ParticipantsTab extends ConsumerWidget {
                       title: Text(person.displayName),
                       subtitle: disabled
                           ? Text(
-                              '${l10n.participantAlreadyGrouped} (${assignedGroup.name})',
+                              '${l10n.participantAlreadyGrouped} '
+                              '(${assignedGroup.name})',
                             )
                           : null,
                     );

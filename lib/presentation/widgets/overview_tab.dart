@@ -17,7 +17,9 @@ class OverviewTab extends ConsumerWidget {
     return expensesAsync.when(
       data: (expenses) {
         final participants = participantsAsync.valueOrNull ?? [];
-        final actualExpenses = expenses.where((expense) => !expense.isSettlementTransfer);
+        final actualExpenses = expenses.where(
+          (expense) => !expense.isSettlementTransfer,
+        );
         final totalSpent = actualExpenses.fold<int>(
           0,
           (sum, e) => sum + e.totalAmount,

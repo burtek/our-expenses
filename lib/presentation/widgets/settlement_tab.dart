@@ -31,13 +31,21 @@ class SettlementTab extends ConsumerWidget {
           ),
         );
         final currency = trip?.currency ?? 'EUR';
-        final nameMap = {for (final participant in participants) participant.id: participant.displayName};
-        final groupNameMap = {for (final group in groups) group.id: group.name};
+        final nameMap = {
+          for (final participant in participants)
+            participant.id: participant.displayName,
+        };
+        final groupNameMap = {
+          for (final group in groups) group.id: group.name,
+        };
 
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(l10n.balances, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.balances,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             ...result.individualBalances.entries.map((entry) {
               final name = nameMap[entry.key] ?? entry.key;
@@ -61,7 +69,8 @@ class SettlementTab extends ConsumerWidget {
             const SizedBox(height: 8),
             ...result.groupBalances.entries.map((entry) {
               final amount = entry.value;
-              final memberNames = (result.groupMembers[entry.key] ?? const <String>[])
+              final memberNames = (result.groupMembers[entry.key] ??
+                      const <String>[])
                   .map((id) => nameMap[id] ?? id)
                   .join(', ');
               final label = groupNameMap[entry.key] ?? memberNames;
@@ -87,9 +96,13 @@ class SettlementTab extends ConsumerWidget {
             else
               ...result.transactions.map((transaction) {
                 final fromNames =
-                    transaction.fromIds.map((id) => nameMap[id] ?? id).join(' & ');
+                    transaction.fromIds.map((id) => nameMap[id] ?? id).join(
+                      ' & ',
+                    );
                 final toNames =
-                    transaction.toIds.map((id) => nameMap[id] ?? id).join(' & ');
+                    transaction.toIds.map((id) => nameMap[id] ?? id).join(
+                      ' & ',
+                    );
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -97,7 +110,9 @@ class SettlementTab extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '$fromNames → $toNames: ${_formatAmount(transaction.amount)} ${transaction.currency}',
+                          '$fromNames → $toNames: '
+                          '${_formatAmount(transaction.amount)} '
+                          '${transaction.currency}',
                         ),
                         const SizedBox(height: 8),
                         Align(
@@ -163,7 +178,9 @@ class SettlementTab extends ConsumerWidget {
                       ),
                     )
                     .toList(),
-                onChanged: (value) => setState(() => fromId = value ?? fromId),
+                onChanged: (value) {
+                  setState(() => fromId = value ?? fromId);
+                },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -177,7 +194,9 @@ class SettlementTab extends ConsumerWidget {
                       ),
                     )
                     .toList(),
-                onChanged: (value) => setState(() => toId = value ?? toId),
+                onChanged: (value) {
+                  setState(() => toId = value ?? toId);
+                },
               ),
             ],
           ),
@@ -194,16 +213,23 @@ class SettlementTab extends ConsumerWidget {
                   id: const Uuid().v4(),
                   tripId: tripId,
                   description:
-                      '$settlementTransferDescriptionPrefix$payerName → $beneficiaryName',
+                      '$settlementTransferDescriptionPrefix'
+                      '$payerName → $beneficiaryName',
                   dateTime: DateTime.now(),
                   totalAmount: transaction.amount,
                   currency: currency,
                   splitMode: SplitMode.exactAmounts,
                   payers: [
-                    ExpensePayer(personId: fromId, amount: transaction.amount),
+                    ExpensePayer(
+                      personId: fromId,
+                      amount: transaction.amount,
+                    ),
                   ],
                   beneficiaries: [
-                    ExpenseBeneficiary(personId: toId, amount: transaction.amount),
+                    ExpenseBeneficiary(
+                      personId: toId,
+                      amount: transaction.amount,
+                    ),
                   ],
                 );
                 ref.read(expensesProvider(tripId).notifier).addExpense(expense);

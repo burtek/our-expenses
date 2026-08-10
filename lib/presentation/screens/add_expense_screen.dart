@@ -159,7 +159,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               ),
               if (selected && multiplePayersSelected)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
                   child: TextFormField(
                     key: ValueKey('payer-${p.id}'),
                     initialValue: _formatMinorUnits(_payerAmounts[p.id]),
@@ -210,7 +214,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               ),
               if (selected && _splitMode == SplitMode.byShares)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
                   child: TextFormField(
                     key: ValueKey('shares-${p.id}'),
                     initialValue: (_beneficiaryShares[p.id] ?? 1).toString(),
@@ -231,7 +239,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 ),
               if (selected && _splitMode == SplitMode.exactAmounts)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
                   child: TextFormField(
                     key: ValueKey('beneficiary-${p.id}'),
                     initialValue: _formatMinorUnits(_beneficiaryAmounts[p.id]),
@@ -302,8 +314,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           .map((id) => _payerAmounts[id])
           .whereType<int>()
           .toList();
-      final payerSum = payerAmounts.fold<int>(0, (sum, amount) => sum + amount);
-      if (payerAmounts.length != payerList.length || payerSum != totalAmount) {
+      final payerSum = payerAmounts.fold<int>(
+        0,
+        (sum, amount) => sum + amount,
+      );
+      final hasInvalidPayerTotal =
+          payerAmounts.length != payerList.length || payerSum != totalAmount;
+      if (hasInvalidPayerTotal) {
         _showError(l10n.payerAmountsMustMatchTotal);
         return;
       }
@@ -350,7 +367,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             .toList();
         final beneficiarySum =
             amounts.fold<int>(0, (sum, amount) => sum + amount);
-        if (amounts.length != benList.length || beneficiarySum != totalAmount) {
+        final hasInvalidBeneficiaryTotal =
+            amounts.length != benList.length || beneficiarySum != totalAmount;
+        if (hasInvalidBeneficiaryTotal) {
           _showError(l10n.beneficiaryAmountsMustMatchTotal);
           return;
         }
@@ -378,7 +397,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     );
 
     if (widget.expenseId != null) {
-      ref.read(expensesProvider(widget.tripId).notifier).updateExpense(expense);
+      ref
+          .read(expensesProvider(widget.tripId).notifier)
+          .updateExpense(expense);
     } else {
       ref.read(expensesProvider(widget.tripId).notifier).addExpense(expense);
     }
@@ -409,6 +430,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
