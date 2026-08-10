@@ -1,4 +1,4 @@
-package com.ourexpenses.expense_settler
+package ovh.dtrw.expenses
 
 import io.flutter.embedding.android.FlutterActivity
 
