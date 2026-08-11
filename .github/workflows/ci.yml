@@ -168,6 +168,7 @@ jobs:
       pull-requests: write
 
     steps:
+      - uses: actions/checkout@v7
       - name: Comment artifact link
         env:
           GH_TOKEN: ${{ github.token }}
