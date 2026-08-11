@@ -24,7 +24,9 @@ void main() {
             _FakeTripRepository([trip]),
           ),
           personRepositoryProvider.overrideWithValue(
-            _FakePersonRepository({trip.id: [person]}),
+            _FakePersonRepository({
+              trip.id: [person]
+            }),
           ),
           settlementGroupRepositoryProvider.overrideWithValue(
             _FakeSettlementGroupRepository(),
@@ -94,7 +96,7 @@ void main() {
 
 class _FakeTripRepository implements TripRepository {
   _FakeTripRepository(List<Trip> trips)
-    : _trips = {for (final trip in trips) trip.id: trip};
+      : _trips = {for (final trip in trips) trip.id: trip};
 
   final Map<String, Trip> _trips;
 

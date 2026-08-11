@@ -69,10 +69,10 @@ class SettlementTab extends ConsumerWidget {
             const SizedBox(height: 8),
             ...result.groupBalances.entries.map((entry) {
               final amount = entry.value;
-              final memberNames = (result.groupMembers[entry.key] ??
-                      const <String>[])
-                  .map((id) => nameMap[id] ?? id)
-                  .join(', ');
+              final memberNames =
+                  (result.groupMembers[entry.key] ?? const <String>[])
+                      .map((id) => nameMap[id] ?? id)
+                      .join(', ');
               final label = groupNameMap[entry.key] ?? memberNames;
               final color = amount >= 0 ? Colors.green : Colors.red;
               return ListTile(
@@ -97,12 +97,12 @@ class SettlementTab extends ConsumerWidget {
               ...result.transactions.map((transaction) {
                 final fromNames =
                     transaction.fromIds.map((id) => nameMap[id] ?? id).join(
-                      ' & ',
-                    );
+                          ' & ',
+                        );
                 final toNames =
                     transaction.toIds.map((id) => nameMap[id] ?? id).join(
-                      ' & ',
-                    );
+                          ' & ',
+                        );
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -212,8 +212,7 @@ class SettlementTab extends ConsumerWidget {
                 final expense = Expense(
                   id: const Uuid().v4(),
                   tripId: tripId,
-                  description:
-                      '$settlementTransferDescriptionPrefix'
+                  description: '$settlementTransferDescriptionPrefix'
                       '$payerName → $beneficiaryName',
                   dateTime: DateTime.now(),
                   totalAmount: transaction.amount,
@@ -232,9 +231,7 @@ class SettlementTab extends ConsumerWidget {
                     ),
                   ],
                 );
-                ref
-                    .read(expensesProvider(tripId).notifier)
-                    .addExpense(expense);
+                ref.read(expensesProvider(tripId).notifier).addExpense(expense);
                 Navigator.pop(ctx);
               },
               child: Text(l10n.save),

@@ -178,13 +178,9 @@ class ParticipantsTab extends ConsumerWidget {
                   displayName: controller.text.trim(),
                   tripId: tripId,
                 );
-                ref
-                    .read(personsProvider(tripId).notifier)
-                    .addPerson(newPerson);
+                ref.read(personsProvider(tripId).notifier).addPerson(newPerson);
               } else {
-                ref
-                    .read(personsProvider(tripId).notifier)
-                    .updatePerson(
+                ref.read(personsProvider(tripId).notifier).updatePerson(
                       person.copyWith(displayName: controller.text.trim()),
                     );
               }

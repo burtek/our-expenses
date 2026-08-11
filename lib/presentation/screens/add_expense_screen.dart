@@ -323,10 +323,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (payerList.length == 1) {
       payers = [ExpensePayer(personId: payerList.first, amount: totalAmount)];
     } else {
-      final payerAmounts = payerList
-          .map((id) => _payerAmounts[id])
-          .whereType<int>()
-          .toList();
+      final payerAmounts =
+          payerList.map((id) => _payerAmounts[id]).whereType<int>().toList();
       final payerSum = payerAmounts.fold<int>(
         0,
         (sum, amount) => sum + amount,
@@ -410,9 +408,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     );
 
     if (widget.expenseId != null) {
-      ref
-          .read(expensesProvider(widget.tripId).notifier)
-          .updateExpense(expense);
+      ref.read(expensesProvider(widget.tripId).notifier).updateExpense(expense);
     } else {
       ref.read(expensesProvider(widget.tripId).notifier).addExpense(expense);
     }
