@@ -17,7 +17,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.x'
+          flutter-version-file: pubspec.yaml
           channel: 'stable'
 
       - name: Install dependencies
@@ -33,21 +33,18 @@ jobs:
         run: flutter test
 
       - name: Build Android APK
-        run: flutter build apk --release
-
-      - id: name
-        name: Get name
-        run: echo "name=expense-settler-android-${{ case(github.event_name == 'push', 'release', 'pr-preview') }}.apk" >> "$GITHUB_OUTPUT"
-
-      - name: Copy file
-        run: cp build/app/outputs/flutter-apk/app-release.apk ${{ steps.name.outputs.name }}
+        run: |
+          flutter build apk
+          flutter build appbundle
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          archive: false
+          name: outputs
           retention-days: ${{ case(github.event_name == 'push', 5, 1) }}
-          path: ${{ steps.name.outputs.name }}
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app.aab
 
   release:
     if: github.event_name == 'push'
@@ -61,8 +58,7 @@ jobs:
       - name: Download APK
         uses: actions/download-artifact@v8
         with:
-          name: expense-settler-android-release.apk
-          path: dist
+          name: outputs
 
       - name: Create GitHub Release
         env:
@@ -73,4 +69,6 @@ jobs:
             --target "${{ github.sha }}" \
             --generate-notes
             --notes "Automated release for commit ${{ github.sha }}" \
-            dist/expense-settler-android-release.apk
+            flutter-apk/app-release.apk
+            bundle/release/app.aab
+
