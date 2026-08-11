@@ -55,6 +55,8 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v7
+
       - name: Download APK
         uses: actions/download-artifact@v8
         with:
