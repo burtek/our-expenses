@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/models/models.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 const _currencies = ['EUR', 'PLN', 'USD', 'GBP', 'CZK'];
@@ -75,7 +75,7 @@ class TripsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: currency,
+                initialValue: currency,
                 decoration: InputDecoration(labelText: l10n.currency),
                 items: _currencies
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))

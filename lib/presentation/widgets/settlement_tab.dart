@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/models/models.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 class SettlementTab extends ConsumerWidget {
@@ -168,7 +168,7 @@ class SettlementTab extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: fromId,
+                initialValue: fromId,
                 decoration: InputDecoration(labelText: l10n.payers),
                 items: transaction.fromIds
                     .map(
@@ -184,7 +184,7 @@ class SettlementTab extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: toId,
+                initialValue: toId,
                 decoration: InputDecoration(labelText: l10n.beneficiaries),
                 items: transaction.toIds
                     .map(

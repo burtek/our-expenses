@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/models/models.dart';
 import '../../domain/services/settlement_calculator.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
