@@ -42,5 +42,18 @@
   "total": "Suma",
   "shares": "Udziały",
   "owes": "jest winny",
-  "isOwed": "należy się"
+  "isOwed": "należy się",
+  "expenseDescriptionRequired": "Opis wydatku jest wymagany.",
+  "invalidAmount": "Wprowadź prawidłową kwotę większą od zera.",
+  "selectAtLeastOnePayer": "Wybierz co najmniej jednego płacącego.",
+  "selectAtLeastOneBeneficiary": "Wybierz co najmniej jednego beneficjenta.",
+  "payerAmountsMustMatchTotal": "Kwoty płacących muszą sumować się do całości.",
+  "beneficiaryAmountsMustMatchTotal": "Kwoty beneficjentów muszą sumować się do całości.",
+  "sharesMustBePositive": "Udziały muszą być dodatnimi liczbami.",
+  "renameParticipant": "Zmień nazwę uczestnika",
+  "markAsSettled": "Oznacz jako rozliczone",
+  "settleUpTransfer": "Transfer rozliczeniowy",
+  "noSettlementGroups": "Brak grup rozliczeniowych.",
+  "selectAtLeastOneMember": "Wybierz co najmniej jednego członka grupy.",
+  "participantAlreadyGrouped": "Ten uczestnik jest już w innej grupie."
 }

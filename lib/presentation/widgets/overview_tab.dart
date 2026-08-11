@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../domain/models/models.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 class OverviewTab extends ConsumerWidget {
@@ -17,7 +17,10 @@ class OverviewTab extends ConsumerWidget {
     return expensesAsync.when(
       data: (expenses) {
         final participants = participantsAsync.valueOrNull ?? [];
-        final totalSpent = expenses.fold<int>(
+        final actualExpenses = expenses.where(
+          (expense) => !expense.isSettlementTransfer,
+        );
+        final totalSpent = actualExpenses.fold<int>(
           0,
           (sum, e) => sum + e.totalAmount,
         );
@@ -46,7 +49,7 @@ class OverviewTab extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
-                    Text('${l10n.expenses}: ${expenses.length}'),
+                    Text('${l10n.expenses}: ${actualExpenses.length}'),
                     Text('${l10n.participants}: ${participants.length}'),
                   ],
                 ),

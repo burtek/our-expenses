@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 class ExpensesTab extends ConsumerWidget {
@@ -29,17 +29,32 @@ class ExpensesTab extends ConsumerWidget {
             final payerNames = expense.payers
                 .map((p) => nameMap[p.personId] ?? '?')
                 .join(', ');
+            final beneficiaryNames = expense.beneficiaries
+                .map((b) => nameMap[b.personId] ?? '?')
+                .join(', ');
             final amount = expense.totalAmount;
             final major = amount ~/ 100;
             final minor = amount % 100;
             return ListTile(
-              title: Text(expense.description),
-              subtitle: Text('${l10n.payers}: $payerNames'),
-              trailing: Text(
-                '$major.${minor.toString().padLeft(2, '0')} ${expense.currency}',
+              leading: expense.isSettlementTransfer
+                  ? const Icon(Icons.swap_horiz)
+                  : null,
+              title: Text(
+                expense.isSettlementTransfer
+                    ? l10n.settleUpTransfer
+                    : expense.displayDescription,
               ),
-              onTap: () =>
-                  context.go('/trip/$tripId/edit-expense/${expense.id}'),
+              subtitle: Text(
+                expense.isSettlementTransfer
+                    ? '$payerNames → $beneficiaryNames'
+                    : '${l10n.payers}: $payerNames',
+              ),
+              trailing: Text('$major.${minor.toString().padLeft(2, '0')} '
+                  '${expense.currency}'),
+              onTap: expense.isSettlementTransfer
+                  ? null
+                  : () =>
+                      context.push('/trip/$tripId/edit-expense/${expense.id}'),
             );
           },
         );

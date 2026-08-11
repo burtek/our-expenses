@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../domain/models/models.dart';
 import '../../domain/services/settlement_calculator.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
@@ -41,6 +41,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final participantsAsync = ref.watch(personsProvider(widget.tripId));
     final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.expenseId != null;
+    final canPop = context.canPop();
 
     // Load existing expense if editing
     if (isEdit && !_loaded) {
@@ -70,26 +71,35 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(isEdit ? l10n.editExpense : l10n.addExpense),
-        actions: [
-          if (isEdit)
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                ref
-                    .read(expensesProvider(widget.tripId).notifier)
-                    .deleteExpense(widget.expenseId!);
-                context.go('/trip/${widget.tripId}');
-              },
-            ),
-        ],
-      ),
-      body: participantsAsync.when(
-        data: (participants) => _buildForm(context, participants, l10n),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          _closeScreen();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: _closeScreen),
+          title: Text(isEdit ? l10n.editExpense : l10n.addExpense),
+          actions: [
+            if (isEdit)
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  ref
+                      .read(expensesProvider(widget.tripId).notifier)
+                      .deleteExpense(widget.expenseId!);
+                  _closeScreen();
+                },
+              ),
+          ],
+        ),
+        body: participantsAsync.when(
+          data: (participants) => _buildForm(context, participants, l10n),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }
@@ -99,6 +109,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     List<Person> participants,
     AppLocalizations l10n,
   ) {
+    final multiplePayersSelected = _selectedPayers.length > 1;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -140,38 +151,133 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         Text(l10n.payers, style: Theme.of(context).textTheme.titleSmall),
         ...participants.map((p) {
           final selected = _selectedPayers.contains(p.id);
-          return CheckboxListTile(
-            title: Text(p.displayName),
-            value: selected,
-            onChanged: (v) {
-              setState(() {
-                if (v == true) {
-                  _selectedPayers.add(p.id);
-                } else {
-                  _selectedPayers.remove(p.id);
-                  _payerAmounts.remove(p.id);
-                }
-              });
-            },
+          return Column(
+            children: [
+              CheckboxListTile(
+                title: Text(p.displayName),
+                value: selected,
+                onChanged: (v) {
+                  setState(() {
+                    if (v == true) {
+                      _selectedPayers.add(p.id);
+                    } else {
+                      _selectedPayers.remove(p.id);
+                      _payerAmounts.remove(p.id);
+                    }
+                  });
+                },
+              ),
+              if (selected && multiplePayersSelected)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
+                  child: TextFormField(
+                    key: ValueKey('payer-${p.id}'),
+                    initialValue: _formatMinorUnits(_payerAmounts[p.id]),
+                    decoration: InputDecoration(labelText: l10n.amount),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+                    ],
+                    onChanged: (value) {
+                      final amount = _parseAmountToMinorUnits(value);
+                      if (amount == null) {
+                        _payerAmounts.remove(p.id);
+                      } else {
+                        _payerAmounts[p.id] = amount;
+                      }
+                    },
+                  ),
+                ),
+            ],
           );
         }),
         const SizedBox(height: 16),
         // Beneficiaries
-        Text(l10n.beneficiaries, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.beneficiaries,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         ...participants.map((p) {
           final selected = _selectedBeneficiaries.contains(p.id);
-          return CheckboxListTile(
-            title: Text(p.displayName),
-            value: selected,
-            onChanged: (v) {
-              setState(() {
-                if (v == true) {
-                  _selectedBeneficiaries.add(p.id);
-                } else {
-                  _selectedBeneficiaries.remove(p.id);
-                }
-              });
-            },
+          return Column(
+            children: [
+              CheckboxListTile(
+                title: Text(p.displayName),
+                value: selected,
+                onChanged: (v) {
+                  setState(() {
+                    if (v == true) {
+                      _selectedBeneficiaries.add(p.id);
+                      if (_splitMode == SplitMode.byShares) {
+                        _beneficiaryShares.putIfAbsent(p.id, () => 1);
+                      }
+                    } else {
+                      _selectedBeneficiaries.remove(p.id);
+                      _beneficiaryShares.remove(p.id);
+                      _beneficiaryAmounts.remove(p.id);
+                    }
+                  });
+                },
+              ),
+              if (selected && _splitMode == SplitMode.byShares)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
+                  child: TextFormField(
+                    key: ValueKey('shares-${p.id}'),
+                    initialValue: (_beneficiaryShares[p.id] ?? 1).toString(),
+                    decoration: InputDecoration(labelText: l10n.shares),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    onChanged: (value) {
+                      final shares = int.tryParse(value);
+                      if (shares == null) {
+                        _beneficiaryShares.remove(p.id);
+                      } else {
+                        _beneficiaryShares[p.id] = shares;
+                      }
+                    },
+                  ),
+                ),
+              if (selected && _splitMode == SplitMode.exactAmounts)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 8,
+                  ),
+                  child: TextFormField(
+                    key: ValueKey('beneficiary-${p.id}'),
+                    initialValue: _formatMinorUnits(_beneficiaryAmounts[p.id]),
+                    decoration: InputDecoration(labelText: l10n.amount),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+                    ],
+                    onChanged: (value) {
+                      final amount = _parseAmountToMinorUnits(value);
+                      if (amount == null) {
+                        _beneficiaryAmounts.remove(p.id);
+                      } else {
+                        _beneficiaryAmounts[p.id] = amount;
+                      }
+                    },
+                  ),
+                ),
+            ],
           );
         }),
         const SizedBox(height: 24),
@@ -184,14 +290,27 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 
   void _save(List<Person> participants) {
+    final l10n = AppLocalizations.of(context)!;
     final desc = _descController.text.trim();
-    if (desc.isEmpty) return;
+    if (desc.isEmpty) {
+      _showError(l10n.expenseDescriptionRequired);
+      return;
+    }
 
     final amountText = _amountController.text.trim();
-    if (amountText.isEmpty) return;
-    final totalAmount = (double.parse(amountText) * 100).round();
-    if (totalAmount <= 0) return;
-    if (_selectedPayers.isEmpty || _selectedBeneficiaries.isEmpty) return;
+    final totalAmount = _parseAmountToMinorUnits(amountText);
+    if (totalAmount == null || totalAmount <= 0) {
+      _showError(l10n.invalidAmount);
+      return;
+    }
+    if (_selectedPayers.isEmpty) {
+      _showError(l10n.selectAtLeastOnePayer);
+      return;
+    }
+    if (_selectedBeneficiaries.isEmpty) {
+      _showError(l10n.selectAtLeastOneBeneficiary);
+      return;
+    }
 
     final trip = ref
         .read(tripsProvider)
@@ -199,16 +318,27 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         ?.firstWhere((t) => t.id == widget.tripId);
     final currency = trip?.currency ?? 'EUR';
 
-    // Build payers - split equally among selected payers
     final payerList = _selectedPayers.toList();
-    final payerSplits = SettlementCalculator.splitEqually(
-      totalAmount,
-      payerList.length,
-    );
-    final payers = List.generate(
-      payerList.length,
-      (i) => ExpensePayer(personId: payerList[i], amount: payerSplits[i]),
-    );
+    late final List<ExpensePayer> payers;
+    if (payerList.length == 1) {
+      payers = [ExpensePayer(personId: payerList.first, amount: totalAmount)];
+    } else {
+      final payerAmounts =
+          payerList.map((id) => _payerAmounts[id]).whereType<int>().toList();
+      final payerSum = payerAmounts.fold<int>(
+        0,
+        (sum, amount) => sum + amount,
+      );
+      final hasInvalidPayerTotal =
+          payerAmounts.length != payerList.length || payerSum != totalAmount;
+      if (hasInvalidPayerTotal) {
+        _showError(l10n.payerAmountsMustMatchTotal);
+        return;
+      }
+      payers = payerList
+          .map((id) => ExpensePayer(personId: id, amount: _payerAmounts[id]!))
+          .toList();
+    }
 
     // Build beneficiaries based on split mode
     final benList = _selectedBeneficiaries.toList();
@@ -227,6 +357,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       case SplitMode.byShares:
         final shares =
             benList.map((id) => _beneficiaryShares[id] ?? 1).toList();
+        if (shares.any((share) => share <= 0)) {
+          _showError(l10n.sharesMustBePositive);
+          return;
+        }
         final splits = SettlementCalculator.splitByShares(totalAmount, shares);
         beneficiaries = List.generate(
           benList.length,
@@ -238,6 +372,18 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         );
         break;
       case SplitMode.exactAmounts:
+        final amounts = benList
+            .map((id) => _beneficiaryAmounts[id])
+            .whereType<int>()
+            .toList();
+        final beneficiarySum =
+            amounts.fold<int>(0, (sum, amount) => sum + amount);
+        final hasInvalidBeneficiaryTotal =
+            amounts.length != benList.length || beneficiarySum != totalAmount;
+        if (hasInvalidBeneficiaryTotal) {
+          _showError(l10n.beneficiaryAmountsMustMatchTotal);
+          return;
+        }
         beneficiaries = benList
             .map(
               (id) => ExpenseBeneficiary(
@@ -266,6 +412,35 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     } else {
       ref.read(expensesProvider(widget.tripId).notifier).addExpense(expense);
     }
+    _closeScreen();
+  }
+
+  void _closeScreen() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
     context.go('/trip/${widget.tripId}');
+  }
+
+  int? _parseAmountToMinorUnits(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) return null;
+    final parsed = double.tryParse(normalized);
+    if (parsed == null) return null;
+    return (parsed * 100).round();
+  }
+
+  String _formatMinorUnits(int? amount) {
+    if (amount == null) return '';
+    final major = amount ~/ 100;
+    final minor = amount % 100;
+    return '$major.${minor.toString().padLeft(2, '0')}';
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

@@ -607,6 +607,48 @@ void main() {
       expect(result.groupBalances['C'], -100);
     });
 
+    test('settle up transfer clears the matching balance', () {
+      final persons = [person('A'), person('B')];
+      final expenses = [
+        Expense(
+          id: 'e1',
+          tripId: 'trip1',
+          description: 'Dinner',
+          dateTime: DateTime.now(),
+          totalAmount: 1000,
+          currency: 'EUR',
+          splitMode: SplitMode.equal,
+          payers: [const ExpensePayer(personId: 'A', amount: 1000)],
+          beneficiaries: [
+            const ExpenseBeneficiary(personId: 'A', amount: 500),
+            const ExpenseBeneficiary(personId: 'B', amount: 500),
+          ],
+        ),
+        Expense(
+          id: 'e2',
+          tripId: 'trip1',
+          description: '${settlementTransferDescriptionPrefix}B → A',
+          dateTime: DateTime.now(),
+          totalAmount: 500,
+          currency: 'EUR',
+          splitMode: SplitMode.exactAmounts,
+          payers: [const ExpensePayer(personId: 'B', amount: 500)],
+          beneficiaries: [const ExpenseBeneficiary(personId: 'A', amount: 500)],
+        ),
+      ];
+
+      final result = calculator.calculate(
+        expenses: expenses,
+        participants: persons,
+        groups: [],
+        currency: 'EUR',
+      );
+
+      expect(result.individualBalances['A'], 0);
+      expect(result.individualBalances['B'], 0);
+      expect(result.transactions, isEmpty);
+    });
+
     test('invariant: payer sum equals total', () {
       final expense = Expense(
         id: 'e1',
