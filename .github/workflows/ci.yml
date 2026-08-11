@@ -69,8 +69,8 @@ jobs:
         run: |
           gh release create "$TAG" \
             --target "${{ github.sha }}" \
-            --generate-notes
+            --generate-notes \
             --notes "Automated release for commit ${{ github.sha }}" \
-            flutter-apk/app-release.apk
+            flutter-apk/app-release.apk \
             bundle/release/app.aab
 
