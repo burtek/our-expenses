@@ -9,23 +9,30 @@ import 'presentation/screens/trips_screen.dart';
 GoRouter createRouter({String? initialLocation}) => GoRouter(
       initialLocation: initialLocation,
       routes: [
-        GoRoute(path: '/', builder: (context, state) => const TripsScreen()),
         GoRoute(
-          path: '/trip/:tripId',
-          builder: (context, state) =>
-              TripDetailScreen(tripId: state.pathParameters['tripId']!),
-        ),
-        GoRoute(
-          path: '/trip/:tripId/add-expense',
-          builder: (context, state) =>
-              AddExpenseScreen(tripId: state.pathParameters['tripId']!),
-        ),
-        GoRoute(
-          path: '/trip/:tripId/edit-expense/:expenseId',
-          builder: (context, state) => AddExpenseScreen(
-            tripId: state.pathParameters['tripId']!,
-            expenseId: state.pathParameters['expenseId'],
-          ),
+          path: '/',
+          builder: (context, state) => const TripsScreen(),
+          routes: [
+            GoRoute(
+              path: 'trip/:tripId',
+              builder: (context, state) =>
+                  TripDetailScreen(tripId: state.pathParameters['tripId']!),
+              routes: [
+                GoRoute(
+                  path: 'add-expense',
+                  builder: (context, state) =>
+                      AddExpenseScreen(tripId: state.pathParameters['tripId']!),
+                ),
+                GoRoute(
+                  path: 'edit-expense/:expenseId',
+                  builder: (context, state) => AddExpenseScreen(
+                    tripId: state.pathParameters['tripId']!,
+                    expenseId: state.pathParameters['expenseId'],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );
