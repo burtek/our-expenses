@@ -127,6 +127,29 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           ],
         ),
         const SizedBox(height: 16),
+        // Date picker
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(l10n.date),
+          subtitle: Text(
+            '${_date.year.toString().padLeft(4, '0')}-'
+            '${_date.month.toString().padLeft(2, '0')}-'
+            '${_date.day.toString().padLeft(2, '0')}',
+          ),
+          trailing: const Icon(Icons.calendar_today),
+          onTap: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _date,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+            );
+            if (picked != null) {
+              setState(() => _date = picked);
+            }
+          },
+        ),
+        const SizedBox(height: 16),
         // Split mode
         SegmentedButton<SplitMode>(
           segments: [
