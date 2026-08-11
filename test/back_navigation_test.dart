@@ -12,7 +12,11 @@ void main() {
     currency: 'EUR',
     createdAt: DateTime(2024),
   );
-  final person = Person(id: 'person-1', displayName: 'Alex', tripId: trip.id);
+  final person = Person(
+    id: 'person-1',
+    displayName: 'Alex',
+    tripId: trip.id,
+  );
 
   ProviderScope buildApp({required String initialLocation}) => ProviderScope(
         overrides: [

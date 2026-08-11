@@ -156,12 +156,12 @@ class ParticipantsTab extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-      title: Text(
-        person == null ? l10n.addParticipant : l10n.renameParticipant,
-      ),
-      content: TextField(
-        controller: controller,
-        decoration: InputDecoration(labelText: l10n.participantName),
+        title: Text(
+          person == null ? l10n.addParticipant : l10n.renameParticipant,
+        ),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(labelText: l10n.participantName),
           autofocus: true,
         ),
         actions: [

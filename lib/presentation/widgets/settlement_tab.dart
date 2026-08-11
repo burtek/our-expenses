@@ -232,7 +232,9 @@ class SettlementTab extends ConsumerWidget {
                     ),
                   ],
                 );
-                ref.read(expensesProvider(tripId).notifier).addExpense(expense);
+                ref
+                    .read(expensesProvider(tripId).notifier)
+                    .addExpense(expense);
                 Navigator.pop(ctx);
               },
               child: Text(l10n.save),

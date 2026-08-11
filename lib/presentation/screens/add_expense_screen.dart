@@ -199,7 +199,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         }),
         const SizedBox(height: 16),
         // Beneficiaries
-        Text(l10n.beneficiaries, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.beneficiaries,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         ...participants.map((p) {
           final selected = _selectedBeneficiaries.contains(p.id);
           return Column(
