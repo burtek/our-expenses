@@ -35,6 +35,10 @@ class ExpensesTab extends ConsumerWidget {
             final amount = expense.totalAmount;
             final major = amount ~/ 100;
             final minor = amount % 100;
+            final dateStr =
+                '${expense.dateTime.year.toString().padLeft(4, '0')}-'
+                '${expense.dateTime.month.toString().padLeft(2, '0')}-'
+                '${expense.dateTime.day.toString().padLeft(2, '0')}';
             return ListTile(
               leading: expense.isSettlementTransfer
                   ? const Icon(Icons.swap_horiz)
@@ -46,8 +50,8 @@ class ExpensesTab extends ConsumerWidget {
               ),
               subtitle: Text(
                 expense.isSettlementTransfer
-                    ? '$payerNames → $beneficiaryNames'
-                    : '${l10n.payers}: $payerNames',
+                    ? '$dateStr · $payerNames → $beneficiaryNames'
+                    : '$dateStr · ${l10n.payers}: $payerNames',
               ),
               trailing: Text('$major.${minor.toString().padLeft(2, '0')} '
                   '${expense.currency}'),
