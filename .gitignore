@@ -34,6 +34,7 @@ pubspec.lock
 android/local.properties
 android/.gradle/
 android/key.properties
+android/app/src/main/java/**/GeneratedPluginRegistrant.java
 **/ios/Runner.xcworkspace/
 **/ios/Pods/
 **/ios/.symlinks/
@@ -42,3 +43,4 @@ android/key.properties
 *.g.dart
 .flutter-plugins
 .flutter-plugins-dependencies
+lib/presentation/l10n/app_localizations*.dart
