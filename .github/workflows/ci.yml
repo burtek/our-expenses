@@ -155,20 +155,20 @@ jobs:
           gh release create "${RELEASE_ARGS[@]}" \
             dist/app-*-release.apk
 
-    pr-comment:
-      if: github.event_name == 'pull_request'
-      needs: build
-      runs-on: ubuntu-latest
+  pr-comment:
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
 
-      permissions:
-        pull-requests: write
+    permissions:
+      pull-requests: write
 
-      steps:
-        - name: Comment artifact link
-          env:
-            GH_TOKEN: ${{ github.token }}
-            RUN_ID: ${{ github.run_id }}
-            PR_NUMBER: ${{ github.event.pull_request.number }}
-          run: |
-            gh pr comment "$PR_NUMBER" \
-              --body "📦 [Download APK artifacts](https://github.com/${{ github.repository }}/actions/runs/$RUN_ID)"
+    steps:
+      - name: Comment artifact link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "$PR_NUMBER" \
+            --body "📦 [Download APK artifacts](https://github.com/${{ github.repository }}/actions/runs/$RUN_ID)"
