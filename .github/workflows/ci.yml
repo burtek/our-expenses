@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: read
 
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
     steps:
       - uses: actions/checkout@v7
 
@@ -31,6 +34,48 @@ jobs:
 
       - name: Run tests
         run: flutter test
+
+      - name: Get latest tags
+        run: git fetch --tags
+
+      - name: Calculate version
+        id: version
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          BASE_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d'+' -f1)
+          BASE_MAJOR=$(echo "$BASE_VERSION" | cut -d. -f1)
+          BASE_MINOR=$(echo "$BASE_VERSION" | cut -d. -f2)
+
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | grep -v pr | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            VERSION="$BASE_VERSION"
+          else
+            LATEST_VERSION=${LATEST_TAG#v}
+
+            LATEST_MAJOR=$(echo "$LATEST_VERSION" | cut -d. -f1)
+            LATEST_MINOR=$(echo "$LATEST_VERSION" | cut -d. -f2)
+            LATEST_PATCH=$(echo "$LATEST_VERSION" | cut -d. -f3)
+
+            if [ "$BASE_MAJOR" != "$LATEST_MAJOR" ] || [ "$BASE_MINOR" != "$LATEST_MINOR" ]; then
+              VERSION="$BASE_VERSION"
+            else
+              PATCH=$((LATEST_PATCH + 1))
+              VERSION="$BASE_MAJOR.$BASE_MINOR.$PATCH"
+            fi
+          fi
+
+          if [ -n "$PR_NUMBER" ]; then
+            VERSION="${VERSION}-pr.${PR_NUMBER}"
+          fi
+
+          echo "VERSION=$VERSION"
+          echo "BUILD_NUMBER=$BUILD_NUMBER"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
 
       - name: Decode Android signing keystore
         env:
@@ -52,7 +97,14 @@ jobs:
           EOF
 
       - name: Build Android APK
-        run: flutter build apk --split-per-abi
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+        run: |
+          flutter build apk \
+            --release --split-per-abi \
+            --build-name="$VERSION" \
+            --build-number="$BUILD_NUMBER"
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
@@ -68,7 +120,6 @@ jobs:
           rm -f android/our-expenses-release.jks
 
   release:
-    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
 
@@ -87,11 +138,19 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: build-${{ github.sha }}
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
-          gh release create "$TAG" \
-            --target "${{ github.sha }}" \
-            --generate-notes \
-            --notes "Automated release for commit ${{ github.sha }}" \
+          RELEASE_ARGS=(
+            "v$VERSION"
+            --target "${{ github.sha }}"
+            --generate-notes
+            --notes "Automated release for commit ${{ github.sha }}"
+          )
+
+          if [[ "$VERSION" == *-pr.* ]]; then
+            RELEASE_ARGS+=(--prerelease)
+          fi
+
+          gh release create "${RELEASE_ARGS[@]}" \
             dist/app-*-release.apk
 
