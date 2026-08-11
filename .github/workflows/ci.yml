@@ -33,18 +33,14 @@ jobs:
         run: flutter test
 
       - name: Build Android APK
-        run: |
-          flutter build apk
-          flutter build appbundle
+        run: flutter build apk --split-per-abi
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
           name: outputs
           retention-days: ${{ case(github.event_name == 'push', 5, 1) }}
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app.aab
+          path: build/app/outputs/flutter-apk/app-*-release.apk
 
   release:
     if: github.event_name == 'push'
@@ -61,6 +57,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: outputs
+          path: dist
 
       - name: Create GitHub Release
         env:
@@ -71,6 +68,5 @@ jobs:
             --target "${{ github.sha }}" \
             --generate-notes \
             --notes "Automated release for commit ${{ github.sha }}" \
-            flutter-apk/app-release.apk \
-            bundle/release/app.aab
+            dist/app-*-release.apk
 
