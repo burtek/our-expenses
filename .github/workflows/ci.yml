@@ -18,6 +18,7 @@ jobs:
 
     outputs:
       version: ${{ steps.version.outputs.version }}
+      latest_tag: ${{ steps.version.outputs.latest_tag }}
 
     steps:
       - uses: actions/checkout@v7
@@ -72,12 +73,13 @@ jobs:
           fi
 
           if [ -n "$PR_NUMBER" ]; then
-            VERSION="${VERSION}-pr.${PR_NUMBER}"
+            VERSION="${VERSION}-pr.${PR_NUMBER}-${BUILD_NUMBER}"
           fi
 
           echo "VERSION=$VERSION"
           echo "BUILD_NUMBER=$BUILD_NUMBER"
 
+          echo "latest_tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
 
@@ -114,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: outputs
-          retention-days: ${{ case(github.event_name == 'push', 5, 1) }}
+          retention-days: 1
           path: build/app/outputs/flutter-apk/app-*-release.apk
 
       - name: Clean up signing files
@@ -125,43 +127,55 @@ jobs:
 
   release:
     needs: build
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
+    outputs:
+      release_link: ${{ steps.release.outputs.release_link }}
+      version: ${{ needs.build.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v7
-
       - name: Download APK
         uses: actions/download-artifact@v8
         with:
           name: outputs
           path: dist
 
-      - name: Create GitHub Release
+      - id: release
+        name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ needs.build.outputs.version }}
+          TAG_NAME: v${{ needs.build.outputs.version }}
+          LATEST_TAG: ${{ needs.build.outputs.latest_tag }}
         run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            NOTES="Automatic release built from commit ${{ github.event.pull_request.head.sha }} against ${{ github.event.pull_request.base.ref }}@${{ github.event.pull_request.base.sha }}"
+          else
+            NOTES="Automatic release built from commit ${{ github.sha }}"
+          fi
+
           RELEASE_ARGS=(
-            "v$VERSION"
+            "$TAG_NAME"
             --target "${{ github.sha }}"
             --generate-notes
-            --notes "Automated release for commit ${{ github.sha }}"
+            --notes "$NOTES"
+            --notes-start-tag "$LATEST_TAG"
+            --repo "${{ github.repository }}"
           )
 
-          if [[ "$VERSION" == *-pr.* ]]; then
+          if [[ "$TAG_NAME" == *-pr.* ]]; then
             RELEASE_ARGS+=(--prerelease)
           fi
 
-          gh release create "${RELEASE_ARGS[@]}" \
-            dist/app-*-release.apk
+          gh release create "${RELEASE_ARGS[@]}" dist/app-*-release.apk
+
+          RELEASE_URL=$(gh release view "$TAG_NAME" --repo "${{ github.repository }}" --json url -q .url)
+          echo "release_link=$RELEASE_URL" >> "$GITHUB_OUTPUT"
 
   pr-comment:
     if: github.event_name == 'pull_request'
-    needs: build
+    needs: release
     runs-on: ubuntu-latest
 
     permissions:
@@ -169,12 +183,16 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v7
       - name: Comment artifact link
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ github.run_id }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          TAG_NAME: v${{ needs.release.outputs.version }}
+          LINK: ${{ needs.release.outputs.release_link }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           gh pr comment "$PR_NUMBER" \
-            --body "📦 [Download APK artifacts](https://github.com/${{ github.repository }}/actions/runs/$RUN_ID) - built from commit ${{ github.sha }}"
+            --repo "${{ github.repository }}" \
+            --body "📦 [Release $TAG_NAME artifacts]($LINK) - built from commit $COMMIT_SHA against `$BASE_REF` @ $BASE_SHA"
