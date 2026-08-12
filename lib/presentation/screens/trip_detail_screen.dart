@@ -44,13 +44,16 @@ class TripDetailScreen extends ConsumerWidget {
               ],
             ),
           ),
-          body: TabBarView(
-            children: [
-              OverviewTab(tripId: tripId),
-              ExpensesTab(tripId: tripId),
-              ParticipantsTab(tripId: tripId),
-              SettlementTab(tripId: tripId),
-            ],
+          body: SafeArea(
+            top: false,
+            child: TabBarView(
+              children: [
+                OverviewTab(tripId: tripId),
+                ExpensesTab(tripId: tripId),
+                ParticipantsTab(tripId: tripId),
+                SettlementTab(tripId: tripId),
+              ],
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => context.push('/trip/$tripId/add-expense'),

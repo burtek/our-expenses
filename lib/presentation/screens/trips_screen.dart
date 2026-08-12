@@ -18,28 +18,32 @@ class TripsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.trips)),
-      body: tripsAsync.when(
-        data: (trips) {
-          if (trips.isEmpty) {
-            return Center(child: Text(l10n.noTrips));
-          }
-          return ListView.builder(
-            itemCount: trips.length,
-            itemBuilder: (context, index) {
-              final trip = trips[index];
-              return ListTile(
-                title: Text(trip.name),
-                subtitle:
-                    trip.description != null ? Text(trip.description!) : null,
-                trailing: Text(trip.currency),
-                onTap: () => context.push('/trip/${trip.id}'),
-                onLongPress: () => _showDeleteDialog(context, ref, trip, l10n),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+      body: SafeArea(
+        top: false,
+        child: tripsAsync.when(
+          data: (trips) {
+            if (trips.isEmpty) {
+              return Center(child: Text(l10n.noTrips));
+            }
+            return ListView.builder(
+              itemCount: trips.length,
+              itemBuilder: (context, index) {
+                final trip = trips[index];
+                return ListTile(
+                  title: Text(trip.name),
+                  subtitle:
+                      trip.description != null ? Text(trip.description!) : null,
+                  trailing: Text(trip.currency),
+                  onTap: () => context.push('/trip/${trip.id}'),
+                  onLongPress: () =>
+                      _showDeleteDialog(context, ref, trip, l10n),
+                );
+              },
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddTripDialog(context, ref, l10n),

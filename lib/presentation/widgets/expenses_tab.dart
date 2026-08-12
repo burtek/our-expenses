@@ -53,12 +53,15 @@ class ExpensesTab extends ConsumerWidget {
                     ? '$dateStr · $payerNames → $beneficiaryNames'
                     : '$dateStr · ${l10n.payers}: $payerNames',
               ),
-              trailing: Text('$major.${minor.toString().padLeft(2, '0')} '
-                  '${expense.currency}'),
+              trailing: Text(
+                '$major.${minor.toString().padLeft(2, '0')} '
+                '${expense.currency}',
+              ),
               onTap: expense.isSettlementTransfer
                   ? null
-                  : () =>
-                      context.push('/trip/$tripId/edit-expense/${expense.id}'),
+                  : () => context.push(
+                        '/trip/$tripId/edit-expense/${expense.id}',
+                      ),
             );
           },
         );
