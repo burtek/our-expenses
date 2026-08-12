@@ -225,10 +225,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         }),
         const SizedBox(height: 16),
         // Beneficiaries
-        Text(
-          l10n.beneficiaries,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        Text(l10n.beneficiaries, style: Theme.of(context).textTheme.titleSmall),
         ...participants.map((p) {
           final selected = _selectedBeneficiaries.contains(p.id);
           return Column(
@@ -263,9 +260,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                     initialValue: (_beneficiaryShares[p.id] ?? 1).toString(),
                     decoration: InputDecoration(labelText: l10n.shares),
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onChanged: (value) {
                       final shares = int.tryParse(value);
                       if (shares == null) {
@@ -351,10 +346,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     } else {
       final payerAmounts =
           payerList.map((id) => _payerAmounts[id]).whereType<int>().toList();
-      final payerSum = payerAmounts.fold<int>(
-        0,
-        (sum, amount) => sum + amount,
-      );
+      final payerSum = payerAmounts.fold<int>(0, (sum, amount) => sum + amount);
       final hasInvalidPayerTotal =
           payerAmounts.length != payerList.length || payerSum != totalAmount;
       if (hasInvalidPayerTotal) {
@@ -402,8 +394,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             .map((id) => _beneficiaryAmounts[id])
             .whereType<int>()
             .toList();
-        final beneficiarySum =
-            amounts.fold<int>(0, (sum, amount) => sum + amount);
+        final beneficiarySum = amounts.fold<int>(
+          0,
+          (sum, amount) => sum + amount,
+        );
         final hasInvalidBeneficiaryTotal =
             amounts.length != benList.length || beneficiarySum != totalAmount;
         if (hasInvalidBeneficiaryTotal) {

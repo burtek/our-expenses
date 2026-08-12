@@ -35,17 +35,12 @@ class SettlementTab extends ConsumerWidget {
           for (final participant in participants)
             participant.id: participant.displayName,
         };
-        final groupNameMap = {
-          for (final group in groups) group.id: group.name,
-        };
+        final groupNameMap = {for (final group in groups) group.id: group.name};
 
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              l10n.balances,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(l10n.balances, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             ...result.individualBalances.entries.map((entry) {
               final name = nameMap[entry.key] ?? entry.key;
@@ -95,14 +90,12 @@ class SettlementTab extends ConsumerWidget {
               Center(child: Text(l10n.noTransactions))
             else
               ...result.transactions.map((transaction) {
-                final fromNames =
-                    transaction.fromIds.map((id) => nameMap[id] ?? id).join(
-                          ' & ',
-                        );
-                final toNames =
-                    transaction.toIds.map((id) => nameMap[id] ?? id).join(
-                          ' & ',
-                        );
+                final fromNames = transaction.fromIds
+                    .map((id) => nameMap[id] ?? id)
+                    .join(' & ');
+                final toNames = transaction.toIds
+                    .map((id) => nameMap[id] ?? id)
+                    .join(' & ');
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -219,10 +212,7 @@ class SettlementTab extends ConsumerWidget {
                   currency: currency,
                   splitMode: SplitMode.exactAmounts,
                   payers: [
-                    ExpensePayer(
-                      personId: fromId,
-                      amount: transaction.amount,
-                    ),
+                    ExpensePayer(personId: fromId, amount: transaction.amount),
                   ],
                   beneficiaries: [
                     ExpenseBeneficiary(
