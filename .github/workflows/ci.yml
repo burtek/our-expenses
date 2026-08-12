@@ -195,4 +195,4 @@ jobs:
         run: |
           gh pr comment "$PR_NUMBER" \
             --repo "${{ github.repository }}" \
-            --body "📦 [Release $TAG_NAME artifacts]($LINK) - built from commit $COMMIT_SHA against `$BASE_REF` @ $BASE_SHA"
+            --body "📦 [Release $TAG_NAME artifacts]($LINK) - built from commit $COMMIT_SHA against \`$BASE_REF\` @ $BASE_SHA"
