@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'presentation/l10n/app_localizations.dart';
@@ -66,11 +67,6 @@ class ExpenseSettlerApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('en'), Locale('pl')],
       routerConfig: routerConfig ?? _router,
-      builder: (context, child) {
-        return SafeArea(
-          child: child ?? const SizedBox.shrink(),
-        );
-      },
     );
   }
 }

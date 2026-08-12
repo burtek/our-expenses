@@ -95,10 +95,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               ),
           ],
         ),
-        body: participantsAsync.when(
-          data: (participants) => _buildForm(context, participants, l10n),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+        body: SafeArea(
+          top: false,
+          child: participantsAsync.when(
+            data: (participants) => _buildForm(context, participants, l10n),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Error: $e')),
+          ),
         ),
       ),
     );
