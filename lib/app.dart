@@ -66,11 +66,6 @@ class ExpenseSettlerApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('en'), Locale('pl')],
       routerConfig: routerConfig ?? _router,
-      builder: (context, child) {
-        return SafeArea(
-          child: child ?? const SizedBox.shrink(),
-        );
-      },
     );
   }
 }
