@@ -1,4 +1,4 @@
-Create a complete Flutter mobile application for tracking and settling shared expenses, similar in concept to a simplified Splitwise.
+Create a complete Flutter mobile application for tracking and settling shared expenses.
 
 The application should be **local-first**, require no backend, and persist all data locally on the device.
 
