@@ -1,6 +1,6 @@
 # Expense Settler
 
-A Flutter mobile application for tracking and settling shared expenses — like a simplified Splitwise.
+A Flutter mobile application for tracking and settling shared expenses
 
 ## Features
 
