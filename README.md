@@ -1,4 +1,4 @@
-# Expense Settler
+# Our Expenses
 
 A Flutter mobile application for tracking and settling shared expenses
 
