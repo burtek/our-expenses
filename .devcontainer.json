@@ -1,3 +1,17 @@
 {
-  "image": "ghcr.io/cirruslabs/flutter:3.44.0"
+  "name": "Flutter",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/flutter:1": {
+      "version": "3.47.0"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart-code"
+      ]
+    }
+  }
 }
