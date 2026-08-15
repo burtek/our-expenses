@@ -14,12 +14,12 @@ class Trip {
   });
 
   Trip copyWith({String? name, String? description, String? currency}) => Trip(
-        id: id,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        currency: currency ?? this.currency,
-        createdAt: createdAt,
-      );
+    id: id,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    currency: currency ?? this.currency,
+    createdAt: createdAt,
+  );
 
   @override
   bool operator ==(Object other) => other is Trip && other.id == id;

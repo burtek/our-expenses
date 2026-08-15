@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/models/models.dart';
 import '../../domain/services/settlement_calculator.dart';
 import '../l10n/app_localizations.dart';
@@ -47,8 +48,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (isEdit && !_loaded) {
       final expensesAsync = ref.watch(expensesProvider(widget.tripId));
       expensesAsync.whenData((expenses) {
-        final expense =
-            expenses.where((e) => e.id == widget.expenseId).firstOrNull;
+        final expense = expenses
+            .where((e) => e.id == widget.expenseId)
+            .firstOrNull;
         if (expense != null && !_loaded) {
           _loaded = true;
           _descController.text = expense.description;
@@ -56,8 +58,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           _splitMode = expense.splitMode;
           _date = expense.dateTime;
           _selectedPayers = expense.payers.map((p) => p.personId).toSet();
-          _selectedBeneficiaries =
-              expense.beneficiaries.map((b) => b.personId).toSet();
+          _selectedBeneficiaries = expense.beneficiaries
+              .map((b) => b.personId)
+              .toSet();
           for (final p in expense.payers) {
             _payerAmounts[p.personId] = p.amount;
           }
@@ -344,8 +347,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (payerList.length == 1) {
       payers = [ExpensePayer(personId: payerList.first, amount: totalAmount)];
     } else {
-      final payerAmounts =
-          payerList.map((id) => _payerAmounts[id]).whereType<int>().toList();
+      final payerAmounts = payerList
+          .map((id) => _payerAmounts[id])
+          .whereType<int>()
+          .toList();
       final payerSum = payerAmounts.fold<int>(0, (sum, amount) => sum + amount);
       final hasInvalidPayerTotal =
           payerAmounts.length != payerList.length || payerSum != totalAmount;
@@ -373,8 +378,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         );
         break;
       case SplitMode.byShares:
-        final shares =
-            benList.map((id) => _beneficiaryShares[id] ?? 1).toList();
+        final shares = benList
+            .map((id) => _beneficiaryShares[id] ?? 1)
+            .toList();
         if (shares.any((share) => share <= 0)) {
           _showError(l10n.sharesMustBePositive);
           return;
@@ -459,8 +465,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
