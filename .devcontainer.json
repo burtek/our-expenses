@@ -2,8 +2,8 @@
   "name": "Flutter",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
   "features": {
-    "ghcr.io/devcontainers-community/features/dart-sdk": {},
     "ghcr.io/awf-project/devcontainer-features/flutter:1": {
+      "precacheAndroid": true,
       "version": "3.47.0"
     }
   },
