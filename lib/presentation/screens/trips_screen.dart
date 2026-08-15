@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/models/models.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
@@ -31,8 +32,9 @@ class TripsScreen extends ConsumerWidget {
                 final trip = trips[index];
                 return ListTile(
                   title: Text(trip.name),
-                  subtitle:
-                      trip.description != null ? Text(trip.description!) : null,
+                  subtitle: trip.description != null
+                      ? Text(trip.description!)
+                      : null,
                   trailing: Text(trip.currency),
                   onTap: () => context.push('/trip/${trip.id}'),
                   onLongPress: () =>

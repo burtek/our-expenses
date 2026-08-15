@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/models/models.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
@@ -180,7 +181,9 @@ class ParticipantsTab extends ConsumerWidget {
                 );
                 ref.read(personsProvider(tripId).notifier).addPerson(newPerson);
               } else {
-                ref.read(personsProvider(tripId).notifier).updatePerson(
+                ref
+                    .read(personsProvider(tripId).notifier)
+                    .updatePerson(
                       person.copyWith(displayName: controller.text.trim()),
                     );
               }

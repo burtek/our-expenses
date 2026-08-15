@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/models/models.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
@@ -205,7 +206,8 @@ class SettlementTab extends ConsumerWidget {
                 final expense = Expense(
                   id: const Uuid().v4(),
                   tripId: tripId,
-                  description: '$settlementTransferDescriptionPrefix'
+                  description:
+                      '$settlementTransferDescriptionPrefix'
                       '$payerName → $beneficiaryName',
                   dateTime: DateTime.now(),
                   totalAmount: transaction.amount,

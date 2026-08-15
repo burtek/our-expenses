@@ -1,41 +1,43 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    hide GlobalMaterialLocalizations;
 import 'package:go_router/go_router.dart';
+
 import 'presentation/l10n/app_localizations.dart';
 import 'presentation/screens/add_expense_screen.dart';
 import 'presentation/screens/trip_detail_screen.dart';
 import 'presentation/screens/trips_screen.dart';
 
 GoRouter createRouter({String? initialLocation}) => GoRouter(
-      initialLocation: initialLocation,
+  initialLocation: initialLocation,
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const TripsScreen(),
       routes: [
         GoRoute(
-          path: '/',
-          builder: (context, state) => const TripsScreen(),
+          path: 'trip/:tripId',
+          builder: (context, state) =>
+              TripDetailScreen(tripId: state.pathParameters['tripId']!),
           routes: [
             GoRoute(
-              path: 'trip/:tripId',
+              path: 'add-expense',
               builder: (context, state) =>
-                  TripDetailScreen(tripId: state.pathParameters['tripId']!),
-              routes: [
-                GoRoute(
-                  path: 'add-expense',
-                  builder: (context, state) =>
-                      AddExpenseScreen(tripId: state.pathParameters['tripId']!),
-                ),
-                GoRoute(
-                  path: 'edit-expense/:expenseId',
-                  builder: (context, state) => AddExpenseScreen(
-                    tripId: state.pathParameters['tripId']!,
-                    expenseId: state.pathParameters['expenseId'],
-                  ),
-                ),
-              ],
+                  AddExpenseScreen(tripId: state.pathParameters['tripId']!),
+            ),
+            GoRoute(
+              path: 'edit-expense/:expenseId',
+              builder: (context, state) => AddExpenseScreen(
+                tripId: state.pathParameters['tripId']!,
+                expenseId: state.pathParameters['expenseId'],
+              ),
             ),
           ],
         ),
       ],
-    );
+    ),
+  ],
+);
 
 final _router = createRouter();
 
