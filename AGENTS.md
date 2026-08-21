@@ -18,6 +18,7 @@ A **minor version bump is required** when either of the following applies:
 
 For such PRs:
 
+- Verify the version wasn't bumped in this PR in a previous commit - do not re-increase again.
 - Increment **only the minor version** in `pubspec.yaml`.
 - Preserve the current major version.
 - **Do not modify the patch version number.** The patch version is managed dynamically by CI.
