@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../domain/services/trip_export_service.dart';
@@ -192,7 +193,7 @@ class TripDetailScreen extends ConsumerWidget {
               .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
           return;
         }
-        await File('${downloadsDir.path}/$fileName')
+        await File(p.join(downloadsDir.path, p.basename(fileName)))
             .writeAsString(content, encoding: utf8);
         if (!context.mounted) return;
         ScaffoldMessenger.of(context)
