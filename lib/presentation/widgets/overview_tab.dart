@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/models/models.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
@@ -24,7 +25,10 @@ class OverviewTab extends ConsumerWidget {
           0,
           (sum, e) => sum + e.totalAmount,
         );
-        final trip = ref.watch(tripsProvider).valueOrNull?.firstWhere(
+        final trip = ref
+            .watch(tripsProvider)
+            .valueOrNull
+            ?.firstWhere(
               (t) => t.id == tripId,
               orElse: () => Trip(
                 id: tripId,

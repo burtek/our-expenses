@@ -163,8 +163,9 @@ class SettlementCalculator {
 
       if (maxCreditor == null || maxDebtor == null) break;
 
-      final settleAmount =
-          maxCreditAmt < maxDebtAmt ? maxCreditAmt : maxDebtAmt;
+      final settleAmount = maxCreditAmt < maxDebtAmt
+          ? maxCreditAmt
+          : maxDebtAmt;
 
       transactions.add(
         SettlementTransaction(

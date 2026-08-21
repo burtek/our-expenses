@@ -2,7 +2,7 @@ import 'package:expense_settler/app.dart';
 import 'package:expense_settler/domain/models/models.dart';
 import 'package:expense_settler/domain/repositories/repositories.dart';
 import 'package:expense_settler/presentation/providers/providers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,33 +13,25 @@ void main() {
     currency: 'EUR',
     createdAt: DateTime(2024),
   );
-  final person = Person(
-    id: 'person-1',
-    displayName: 'Alex',
-    tripId: trip.id,
-  );
+  final person = Person(id: 'person-1', displayName: 'Alex', tripId: trip.id);
 
   ProviderScope buildApp({required String initialLocation}) => ProviderScope(
-        overrides: [
-          tripRepositoryProvider.overrideWithValue(
-            _FakeTripRepository([trip]),
-          ),
-          personRepositoryProvider.overrideWithValue(
-            _FakePersonRepository({
-              trip.id: [person]
-            }),
-          ),
-          settlementGroupRepositoryProvider.overrideWithValue(
-            _FakeSettlementGroupRepository(),
-          ),
-          expenseRepositoryProvider.overrideWithValue(
-            _FakeExpenseRepository(),
-          ),
-        ],
-        child: ExpenseSettlerApp(
-          routerConfig: createRouter(initialLocation: initialLocation),
-        ),
-      );
+    overrides: [
+      tripRepositoryProvider.overrideWithValue(_FakeTripRepository([trip])),
+      personRepositoryProvider.overrideWithValue(
+        _FakePersonRepository({
+          trip.id: [person],
+        }),
+      ),
+      settlementGroupRepositoryProvider.overrideWithValue(
+        _FakeSettlementGroupRepository(),
+      ),
+      expenseRepositoryProvider.overrideWithValue(_FakeExpenseRepository()),
+    ],
+    child: ExpenseSettlerApp(
+      routerConfig: createRouter(initialLocation: initialLocation),
+    ),
+  );
 
   testWidgets('deep-linked trip detail back navigates to trips list', (
     tester,
@@ -97,7 +89,7 @@ void main() {
 
 class _FakeTripRepository implements TripRepository {
   _FakeTripRepository(List<Trip> trips)
-      : _trips = {for (final trip in trips) trip.id: trip};
+    : _trips = {for (final trip in trips) trip.id: trip};
 
   final Map<String, Trip> _trips;
 
