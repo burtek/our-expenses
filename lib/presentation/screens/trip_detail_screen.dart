@@ -169,9 +169,7 @@ class TripDetailScreen extends ConsumerWidget {
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(content, encoding: utf8);
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(file.path)],
-      ));
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
