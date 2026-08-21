@@ -130,7 +130,7 @@ class TripDetailScreen extends ConsumerWidget {
         .getExpensesByTrip(tripId);
     if (!context.mounted) return;
 
-    final exportService = const TripExportService();
+    const exportService = TripExportService();
     final isCsv =
         action == _ExportAction.saveCsv || action == _ExportAction.shareCsv;
     final extension = isCsv ? 'csv' : 'txt';
@@ -169,7 +169,9 @@ class TripDetailScreen extends ConsumerWidget {
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(content, encoding: utf8);
-      await Share.shareXFiles([XFile(file.path)]);
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile(file.path)],
+      ));
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.exportShared)));

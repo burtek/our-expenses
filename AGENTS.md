@@ -50,3 +50,5 @@ Do not independently change the project's versioning policy without an explicit 
 ## Dependencies
 
 For every newly added dependency, always verify and use the latest available version unless it is incompatible with the app or conflicts with other dependencies. Do not update unrelated existing dependencies.
+
+Always run `flutter pub get` to regenerate pubspec.lock when changing dependencies and include that file in the commit.

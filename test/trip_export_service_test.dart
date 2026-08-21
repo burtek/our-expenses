@@ -4,18 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const service = TripExportService();
-  const trip = Trip(
+  final trip = Trip(
     id: 'trip-1',
     name: 'Weekend, "City" Break',
     description: 'Test trip',
     currency: 'EUR',
     createdAt: DateTime(2026, 1, 2),
   );
-  const participants = [
+  final participants = [
     Person(id: 'p1', displayName: 'Alice', tripId: trip.id),
     Person(id: 'p2', displayName: 'Bob', tripId: trip.id),
   ];
-  const expenses = [
+  final expenses = [
     Expense(
       id: 'e1',
       tripId: trip.id,
@@ -24,10 +24,10 @@ void main() {
       totalAmount: 1234,
       currency: 'EUR',
       splitMode: SplitMode.equal,
-      payers: [ExpensePayer(personId: 'p1', amount: 1234)],
+      payers: [const ExpensePayer(personId: 'p1', amount: 1234)],
       beneficiaries: [
-        ExpenseBeneficiary(personId: 'p1', amount: 617),
-        ExpenseBeneficiary(personId: 'p2', amount: 617),
+        const ExpenseBeneficiary(personId: 'p1', amount: 617),
+        const ExpenseBeneficiary(personId: 'p2', amount: 617),
       ],
     ),
   ];
@@ -61,7 +61,7 @@ void main() {
   });
 
   test('preserves sign for negative minor-unit amounts', () {
-    const refundExpense = Expense(
+    final refundExpense = Expense(
       id: 'e2',
       tripId: trip.id,
       description: 'Refund',
@@ -69,14 +69,14 @@ void main() {
       totalAmount: -50,
       currency: 'EUR',
       splitMode: SplitMode.exactAmounts,
-      payers: [ExpensePayer(personId: 'p1', amount: -50)],
-      beneficiaries: [ExpenseBeneficiary(personId: 'p2', amount: -50)],
+      payers: const [ExpensePayer(personId: 'p1', amount: -50)],
+      beneficiaries: const [ExpenseBeneficiary(personId: 'p2', amount: -50)],
     );
 
     final result = service.toCsv(
       trip: trip,
       participants: participants,
-      expenses: const [refundExpense],
+      expenses: [refundExpense],
     );
 
     expect(result, contains('"-0.50"'));
