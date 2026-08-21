@@ -161,9 +161,8 @@ class TripDetailScreen extends ConsumerWidget {
         }
         await File(location.path).writeAsString(content, encoding: utf8);
         if (!context.mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
         return;
       }
 
@@ -172,14 +171,12 @@ class TripDetailScreen extends ConsumerWidget {
       await file.writeAsString(content, encoding: utf8);
       await Share.shareXFiles([XFile(file.path)]);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.exportShared)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
     }
   }
 }
