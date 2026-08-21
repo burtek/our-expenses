@@ -8,7 +8,9 @@ class TripExportService {
     required List<Person> participants,
     required List<Expense> expenses,
   }) {
-    final namesById = {for (final person in participants) person.id: person.displayName};
+    final namesById = {
+      for (final person in participants) person.id: person.displayName,
+    };
     final rows = <List<String>>[
       [
         'trip',
@@ -29,7 +31,10 @@ class TripExportService {
           expense.currency,
           expense.splitMode.name,
           expense.payers
-              .map((payer) => '${namesById[payer.personId] ?? payer.personId}: ${_formatAmount(payer.amount)}')
+              .map(
+                (payer) =>
+                    '${namesById[payer.personId] ?? payer.personId}: ${_formatAmount(payer.amount)}',
+              )
               .join(' | '),
           expense.beneficiaries
               .map(
@@ -49,7 +54,9 @@ class TripExportService {
     required List<Person> participants,
     required List<Expense> expenses,
   }) {
-    final namesById = {for (final person in participants) person.id: person.displayName};
+    final namesById = {
+      for (final person in participants) person.id: person.displayName,
+    };
     final buffer = StringBuffer()
       ..writeln('Trip: ${trip.name}')
       ..writeln('Currency: ${trip.currency}');

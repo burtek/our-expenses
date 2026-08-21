@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:file_selector/file_selector.dart' show XTypeGroup, getSaveLocation;
+import 'package:file_selector/file_selector.dart'
+    show XTypeGroup, getSaveLocation;
 import 'package:share_plus/share_plus.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +50,8 @@ class TripDetailScreen extends ConsumerWidget {
             title: Text(trip?.name ?? ''),
             actions: [
               PopupMenuButton<_ExportAction>(
-                onSelected: (action) => _handleExport(context, ref, action, l10n),
+                onSelected: (action) =>
+                    _handleExport(context, ref, action, l10n),
                 itemBuilder: (_) => [
                   PopupMenuItem(
                     value: _ExportAction.saveCsv,
@@ -119,17 +121,18 @@ class TripDetailScreen extends ConsumerWidget {
       return;
     }
 
-    final participants = await ref.read(personRepositoryProvider).getPersonsByTrip(
-      tripId,
-    );
+    final participants = await ref
+        .read(personRepositoryProvider)
+        .getPersonsByTrip(tripId);
     if (!context.mounted) return;
-    final expenses = await ref.read(expenseRepositoryProvider).getExpensesByTrip(
-      tripId,
-    );
+    final expenses = await ref
+        .read(expenseRepositoryProvider)
+        .getExpensesByTrip(tripId);
     if (!context.mounted) return;
 
     final exportService = const TripExportService();
-    final isCsv = action == _ExportAction.saveCsv || action == _ExportAction.shareCsv;
+    final isCsv =
+        action == _ExportAction.saveCsv || action == _ExportAction.shareCsv;
     final extension = isCsv ? 'csv' : 'txt';
     final content = isCsv
         ? exportService.toCsv(
@@ -142,17 +145,15 @@ class TripDetailScreen extends ConsumerWidget {
             participants: participants,
             expenses: expenses,
           );
-    final fileName = '${trip.name.replaceAll(_fileNameSanitizer, '_')}.$extension';
+    final fileName =
+        '${trip.name.replaceAll(_fileNameSanitizer, '_')}.$extension';
 
     try {
       if (action == _ExportAction.saveCsv || action == _ExportAction.saveTxt) {
         final location = await getSaveLocation(
           suggestedName: fileName,
           acceptedTypeGroups: [
-            XTypeGroup(
-              label: extension.toUpperCase(),
-              extensions: [extension],
-            ),
+            XTypeGroup(label: extension.toUpperCase(), extensions: [extension]),
           ],
         );
         if (location == null || !context.mounted) {
