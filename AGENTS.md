@@ -18,6 +18,7 @@ A **minor version bump is required** when either of the following applies:
 
 For such PRs:
 
+- Verify the version wasn't bumped in this PR in a previous commit - do not re-increase again.
 - Increment **only the minor version** in `pubspec.yaml`.
 - Preserve the current major version.
 - **Do not modify the patch version number.** The patch version is managed dynamically by CI.
@@ -45,3 +46,9 @@ If the required minor version bump is missing, update `pubspec.yaml` as part of 
 
 Do not independently change the project's versioning policy without an explicit instruction from the repository owner.
 :::
+
+## Dependencies
+
+For every newly added dependency, always verify and use the latest available version unless it is incompatible with the app or conflicts with other dependencies. Do not update unrelated existing dependencies.
+
+Always run `flutter pub get` to regenerate pubspec.lock when changing dependencies and include that file in the commit.

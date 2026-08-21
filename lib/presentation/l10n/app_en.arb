@@ -55,5 +55,12 @@
   "settleUpTransfer": "Settle up transfer",
   "noSettlementGroups": "No settlement groups yet.",
   "selectAtLeastOneMember": "Select at least one group member.",
-  "participantAlreadyGrouped": "This participant is already in another group."
+  "participantAlreadyGrouped": "This participant is already in another group.",
+  "exportSaveCsv": "Save as CSV",
+  "exportShareCsv": "Share CSV",
+  "exportSaveTxt": "Save as TXT",
+  "exportShareTxt": "Share TXT",
+  "exportSaved": "Export saved.",
+  "exportShared": "Export ready to share.",
+  "exportFailed": "Could not export data."
 }
