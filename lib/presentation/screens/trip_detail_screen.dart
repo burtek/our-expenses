@@ -3,13 +3,11 @@ import 'dart:io';
 
 import 'package:file_selector/file_selector.dart'
     show FileSaveLocation, XTypeGroup, getSaveLocation;
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../domain/services/trip_export_service.dart';
@@ -150,6 +148,7 @@ class TripDetailScreen extends ConsumerWidget {
           );
     final fileName =
         '${trip.name.replaceAll(_fileNameSanitizer, '_')}.$extension';
+    var saveViaShareFallback = false;
 
     try {
       if (action == _ExportAction.saveCsv || action == _ExportAction.saveTxt) {
@@ -165,11 +164,9 @@ class TripDetailScreen extends ConsumerWidget {
               ),
             ],
           );
-        } on MissingPluginException catch (e, st) {
-          debugPrint('getSaveLocation not supported: $e\n$st');
+        } on MissingPluginException {
           saveLocationSupported = false;
-        } on UnsupportedError catch (e, st) {
-          debugPrint('getSaveLocation unsupported: $e\n$st');
+        } on UnsupportedError {
           saveLocationSupported = false;
         }
 
@@ -183,22 +180,7 @@ class TripDetailScreen extends ConsumerWidget {
               .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
           return;
         }
-
-        // getSaveLocation not available (e.g. Android) — write directly to Downloads
-        final downloadsDir = await getDownloadsDirectory();
-        if (downloadsDir == null) {
-          debugPrint('Downloads directory not available on this platform');
-          if (!context.mounted) return;
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
-          return;
-        }
-        await File(p.join(downloadsDir.path, p.basename(fileName)))
-            .writeAsString(content, encoding: utf8);
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
-        return;
+        saveViaShareFallback = true;
       }
 
       final tempDir = await getTemporaryDirectory();
@@ -209,14 +191,23 @@ class TripDetailScreen extends ConsumerWidget {
       );
       if (!context.mounted) return;
       if (result.status == ShareResultStatus.success) {
+        final message =
+            action == _ExportAction.shareCsv ||
+                action == _ExportAction.shareTxt ||
+                saveViaShareFallback
+            ? l10n.exportShared
+            : l10n.exportSaved;
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
+            .showSnackBar(SnackBar(content: Text(message)));
       } else if (result.status == ShareResultStatus.unavailable) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
+      } else if (result.status == ShareResultStatus.dismissed &&
+          saveViaShareFallback) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
       }
-    } catch (e, st) {
-      debugPrint('Export failed: $e\n$st');
+    } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
