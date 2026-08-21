@@ -45,3 +45,7 @@ If the required minor version bump is missing, update `pubspec.yaml` as part of 
 
 Do not independently change the project's versioning policy without an explicit instruction from the repository owner.
 :::
+
+## Dependencies
+
+For every newly added dependency, always verify and use the latest available version unless it is incompatible with the app or conflicts with other dependencies. Do not update unrelated existing dependencies.
