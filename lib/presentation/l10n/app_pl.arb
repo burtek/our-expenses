@@ -55,5 +55,12 @@
   "settleUpTransfer": "Transfer rozliczeniowy",
   "noSettlementGroups": "Brak grup rozliczeniowych.",
   "selectAtLeastOneMember": "Wybierz co najmniej jednego członka grupy.",
-  "participantAlreadyGrouped": "Ten uczestnik jest już w innej grupie."
+  "participantAlreadyGrouped": "Ten uczestnik jest już w innej grupie.",
+  "exportSaveCsv": "Zapisz jako CSV",
+  "exportShareCsv": "Udostępnij CSV",
+  "exportSaveTxt": "Zapisz jako TXT",
+  "exportShareTxt": "Udostępnij TXT",
+  "exportSaved": "Eksport zapisany.",
+  "exportShared": "Eksport gotowy do udostępnienia.",
+  "exportFailed": "Nie udało się wyeksportować danych."
 }
