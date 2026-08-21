@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:file_selector/file_selector.dart'
     show FileSaveLocation, XTypeGroup, getSaveLocation;
 import 'package:flutter/services.dart' show MissingPluginException;
@@ -159,14 +158,15 @@ class TripDetailScreen extends ConsumerWidget {
           location = await getSaveLocation(
             suggestedName: fileName,
             acceptedTypeGroups: [
-              XTypeGroup(label: extension.toUpperCase(), extensions: [extension]),
+              XTypeGroup(
+                label: extension.toUpperCase(),
+                extensions: [extension],
+              ),
             ],
           );
         } on MissingPluginException {
           saveLocationSupported = false;
         } on UnsupportedError {
-          saveLocationSupported = false;
-        } on UnimplementedError {
           saveLocationSupported = false;
         }
 
@@ -197,9 +197,8 @@ class TripDetailScreen extends ConsumerWidget {
                 saveViaShareFallback
             ? l10n.exportShared
             : l10n.exportSaved;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       } else if (result.status == ShareResultStatus.unavailable) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
