@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_selector/file_selector.dart'
-    show XTypeGroup, getSaveLocation;
+    show FileSaveLocation, XTypeGroup, getSaveLocation;
 import 'package:share_plus/share_plus.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -150,29 +151,51 @@ class TripDetailScreen extends ConsumerWidget {
 
     try {
       if (action == _ExportAction.saveCsv || action == _ExportAction.saveTxt) {
-        final location = await getSaveLocation(
-          suggestedName: fileName,
-          acceptedTypeGroups: [
-            XTypeGroup(label: extension.toUpperCase(), extensions: [extension]),
-          ],
-        );
-        if (location == null || !context.mounted) {
+        FileSaveLocation? location;
+        var saveLocationSupported = true;
+        try {
+          location = await getSaveLocation(
+            suggestedName: fileName,
+            acceptedTypeGroups: [
+              XTypeGroup(label: extension.toUpperCase(), extensions: [extension]),
+            ],
+          );
+        } on Exception {
+          saveLocationSupported = false;
+        }
+
+        if (saveLocationSupported) {
+          if (location == null || !context.mounted) {
+            return;
+          }
+          await File(location.path).writeAsString(content, encoding: utf8);
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
           return;
         }
-        await File(location.path).writeAsString(content, encoding: utf8);
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
-        return;
       }
 
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(content, encoding: utf8);
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+      final result = await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)]),
+      );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
+      if (result.status == ShareResultStatus.success) {
+        final message =
+            action == _ExportAction.shareCsv ||
+                action == _ExportAction.shareTxt
+            ? l10n.exportShared
+            : l10n.exportSaved;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      } else if (result.status == ShareResultStatus.unavailable) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
+      }
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
