@@ -59,4 +59,28 @@ void main() {
     expect(result, contains('Expenses:'));
     expect(result, contains('2026-02-01 | Dinner | 12.34 EUR'));
   });
+
+  test('preserves sign for negative minor-unit amounts', () {
+    const refundExpense = Expense(
+      id: 'e2',
+      tripId: trip.id,
+      description: 'Refund',
+      dateTime: DateTime(2026, 2, 2),
+      totalAmount: -50,
+      currency: 'EUR',
+      splitMode: SplitMode.exactAmounts,
+      payers: [ExpensePayer(personId: 'p1', amount: -50)],
+      beneficiaries: [ExpenseBeneficiary(personId: 'p2', amount: -50)],
+    );
+
+    final result = service.toCsv(
+      trip: trip,
+      participants: participants,
+      expenses: const [refundExpense],
+    );
+
+    expect(result, contains('"-0.50"'));
+    expect(result, contains('"Alice: -0.50"'));
+    expect(result, contains('"Bob: -0.50"'));
+  });
 }

@@ -41,7 +41,7 @@ class TripExportService {
       ),
     ];
 
-    return rows.map((row) => row.map(_escapeCsvField).join(',')).join('\n');
+    return rows.map((row) => row.map(_escapeCsvField).join(',')).join('\r\n');
   }
 
   String toTxt({
@@ -88,9 +88,10 @@ class TripExportService {
       '${value.year.toString().padLeft(4, '0')}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
 
   String _formatAmount(int amountInMinorUnits) {
-    final major = amountInMinorUnits ~/ 100;
+    final major = amountInMinorUnits.abs() ~/ 100;
     final minor = amountInMinorUnits.abs() % 100;
-    return '$major.${minor.toString().padLeft(2, '0')}';
+    final sign = amountInMinorUnits < 0 ? '-' : '';
+    return '$sign$major.${minor.toString().padLeft(2, '0')}';
   }
 
   String _escapeCsvField(String value) {

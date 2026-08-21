@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart' show XTypeGroup, getSaveLocation;
@@ -18,6 +19,8 @@ import '../widgets/overview_tab.dart';
 enum _ExportAction { saveCsv, shareCsv, saveTxt, shareTxt }
 
 class TripDetailScreen extends ConsumerWidget {
+  static final _fileNameSanitizer = RegExp(r'[^a-zA-Z0-9_\-]');
+
   final String tripId;
   const TripDetailScreen({super.key, required this.tripId});
 
@@ -119,9 +122,11 @@ class TripDetailScreen extends ConsumerWidget {
     final participants = await ref.read(personRepositoryProvider).getPersonsByTrip(
       tripId,
     );
+    if (!context.mounted) return;
     final expenses = await ref.read(expenseRepositoryProvider).getExpensesByTrip(
       tripId,
     );
+    if (!context.mounted) return;
 
     final exportService = const TripExportService();
     final isCsv = action == _ExportAction.saveCsv || action == _ExportAction.shareCsv;
@@ -137,8 +142,7 @@ class TripDetailScreen extends ConsumerWidget {
             participants: participants,
             expenses: expenses,
           );
-    final fileName =
-        '${trip.name.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_')}.${extension}';
+    final fileName = '${trip.name.replaceAll(_fileNameSanitizer, '_')}.$extension';
 
     try {
       if (action == _ExportAction.saveCsv || action == _ExportAction.saveTxt) {
@@ -154,7 +158,7 @@ class TripDetailScreen extends ConsumerWidget {
         if (location == null || !context.mounted) {
           return;
         }
-        await File(location.path).writeAsString(content);
+        await File(location.path).writeAsString(content, encoding: utf8);
         if (!context.mounted) return;
         ScaffoldMessenger.of(
           context,
@@ -164,7 +168,7 @@ class TripDetailScreen extends ConsumerWidget {
 
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
-      await file.writeAsString(content);
+      await file.writeAsString(content, encoding: utf8);
       await Share.shareXFiles([XFile(file.path)]);
       if (!context.mounted) return;
       ScaffoldMessenger.of(
