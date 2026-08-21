@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart'
-    show XTypeGroup, getSaveLocation;
-import 'package:share_plus/share_plus.dart';
+    show FileSaveLocation, XTypeGroup, getSaveLocation;
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:material_ui/material_ui.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../domain/services/trip_export_service.dart';
 import '../l10n/app_localizations.dart';
@@ -150,16 +153,48 @@ class TripDetailScreen extends ConsumerWidget {
 
     try {
       if (action == _ExportAction.saveCsv || action == _ExportAction.saveTxt) {
-        final location = await getSaveLocation(
-          suggestedName: fileName,
-          acceptedTypeGroups: [
-            XTypeGroup(label: extension.toUpperCase(), extensions: [extension]),
-          ],
-        );
-        if (location == null || !context.mounted) {
+        FileSaveLocation? location;
+        var saveLocationSupported = true;
+        try {
+          location = await getSaveLocation(
+            suggestedName: fileName,
+            acceptedTypeGroups: [
+              XTypeGroup(
+                label: extension.toUpperCase(),
+                extensions: [extension],
+              ),
+            ],
+          );
+        } on MissingPluginException catch (e, st) {
+          debugPrint('getSaveLocation not supported: $e\n$st');
+          saveLocationSupported = false;
+        } on UnsupportedError catch (e, st) {
+          debugPrint('getSaveLocation unsupported: $e\n$st');
+          saveLocationSupported = false;
+        }
+
+        if (saveLocationSupported) {
+          if (location == null || !context.mounted) {
+            return;
+          }
+          await File(location.path).writeAsString(content, encoding: utf8);
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
           return;
         }
-        await File(location.path).writeAsString(content, encoding: utf8);
+
+        // getSaveLocation not available (e.g. Android) — write directly to Downloads
+        final downloadsDir = await getDownloadsDirectory();
+        if (downloadsDir == null) {
+          debugPrint('Downloads directory not available on this platform');
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
+          return;
+        }
+        await File(p.join(downloadsDir.path, p.basename(fileName)))
+            .writeAsString(content, encoding: utf8);
         if (!context.mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l10n.exportSaved)));
@@ -169,11 +204,19 @@ class TripDetailScreen extends ConsumerWidget {
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(content, encoding: utf8);
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+      final result = await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)]),
+      );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
-    } catch (_) {
+      if (result.status == ShareResultStatus.success) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.exportShared)));
+      } else if (result.status == ShareResultStatus.unavailable) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
+      }
+    } catch (e, st) {
+      debugPrint('Export failed: $e\n$st');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.exportFailed)));
